@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>南山怪客 · 文集</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-regular.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-bold.css">
 <style>
   :root {
     --paper: #f4ecdc;    /* 暖米白宣纸底 */
@@ -11,8 +14,8 @@
     --muted: #8a7d66;    /* 暖灰褐 */
     --line:  #ddd2bd;    /* 暖细线 */
     --cinnabar: #a63a2b;/* 朱砂 */
-    --serif:  "LXGW WenKai Medium", "霞鹜文楷 中粗", "霞鹜文楷", "楷体", "KaiTi", serif;  /* 正文：霞鹜文楷 */
-    --title:  "LXGW WenKai Medium", "霞鹜文楷 中粗", "霞鹜文楷", serif;  /* 标题：霞鹜文楷 Medium */
+    --serif:  "LXGW WenKai", "霞鹜文楷 中粗", "霞鹜文楷", "楷体", "KaiTi", serif;  /* 正文：霞鹜文楷 Regular */
+    --title:  "LXGW WenKai", "霞鹜文楷 中粗", "霞鹜文楷", serif;  /* 标题：霞鹜文楷 Bold */
     --song:   "Noto Serif SC", "Source Han Serif SC", "Songti SC", "SimSun", serif;  /* 站名：思源宋体 */
     --sans:   "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Arial", sans-serif;
   }
@@ -114,6 +117,7 @@
   }
   .post-link .title {
     font-family: var(--title);
+    font-weight: bold;
     font-size: 27px;
     letter-spacing: 0;
     transition: transform .3s ease, color .3s ease;
@@ -191,7 +195,7 @@
   .article-title {
     text-align: center;
     font-family: var(--title);
-    font-weight: normal;
+    font-weight: bold;
     font-size: 46px;
     letter-spacing: 0;
     margin: 28px 0 72px;
