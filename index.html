@@ -28,16 +28,13 @@
   body {
     background-color: var(--paper);
     background-image:
-      /* 纸张折痕：几道极淡的横向卷痕，跟着纸走 */
-      linear-gradient(to bottom, transparent 0%, transparent calc(15% - 1px), rgba(110,82,45,0.05) 15%, rgba(255,255,255,0.055) calc(15% + 1px), transparent calc(15% + 2px), transparent 100%),
-      linear-gradient(to bottom, transparent 0%, transparent calc(39% - 1px), rgba(110,82,45,0.05) 39%, rgba(255,255,255,0.055) calc(39% + 1px), transparent calc(39% + 2px), transparent 100%),
-      linear-gradient(to bottom, transparent 0%, transparent calc(63% - 1px), rgba(110,82,45,0.05) 63%, rgba(255,255,255,0.055) calc(63% + 1px), transparent calc(63% + 2px), transparent 100%),
-      linear-gradient(to bottom, transparent 0%, transparent calc(84% - 1px), rgba(110,82,45,0.05) 84%, rgba(255,255,255,0.055) calc(84% + 1px), transparent calc(84% + 2px), transparent 100%),
+      /* 揉皱纸褶皱：低频率随机明暗 + 模糊，模拟揉皱的折痕起伏 */
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='800'><filter id='c'><feTurbulence type='fractalNoise' baseFrequency='0.015' numOctaves='4' seed='3' stitchTiles='stitch'/><feGaussianBlur stdDeviation='2'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23c)' opacity='0.08'/></svg>"),
       /* 顶部微光 + 四周微暖暗角 + 细纤维噪点 */
       radial-gradient(130% 90% at 50% 12%, rgba(255,255,255,0.62) 0%, rgba(255,255,255,0) 56%),
       radial-gradient(150% 130% at 50% 50%, rgba(122,98,62,0.075) 0%, rgba(122,98,62,0) 72%),
       url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/></svg>");
-    background-attachment: scroll, scroll, scroll, scroll, fixed, fixed, fixed;
+    background-attachment: fixed;
     color: var(--ink);
     font-family: var(--serif);
     -webkit-font-smoothing: antialiased;
