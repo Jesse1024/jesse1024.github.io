@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>南山怪客 · 文集</title>
+<style>
+  :root {
+    --paper: #f4ecdc;    /* 暖米白宣纸底 */
+    --ink:   #241e14;    /* 暖褐黑 */
+    --muted: #8a7d66;    /* 暖灰褐 */
+    --line:  #ddd2bd;    /* 暖细线 */
+    --cinnabar: #a63a2b;/* 朱砂 */
+    --serif:  "LXGW WenKai Medium", "霞鹜文楷 中粗", "霞鹜文楷", "楷体", "KaiTi", serif;  /* 正文：霞鹜文楷 */
+    --title:  "LXGW WenKai Medium", "霞鹜文楷 中粗", "霞鹜文楷", serif;  /* 标题：霞鹜文楷 Medium */
+    --song:   "Noto Serif SC", "Source Han Serif SC", "Songti SC", "SimSun", serif;  /* 站名：思源宋体 */
+    --sans:   "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Arial", sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  /* 纸质感：暖米白底 + 顶部一道微光 + 四周微暖暗角 + 细纤维噪点 */
+  body {
+    background-color: var(--paper);
+    background-image:
+      radial-gradient(130% 90% at 50% 12%, rgba(255,255,255,0.62) 0%, rgba(255,255,255,0) 56%),
+      radial-gradient(150% 130% at 50% 50%, rgba(122,98,62,0.075) 0%, rgba(122,98,62,0) 72%),
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/></svg>");
+    background-attachment: fixed;
+    color: var(--ink);
+    font-family: var(--serif);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    line-height: 1.6;
+  }
+
+  /* ============ 骨架 ============ */
+  .view {
+    display: none;
+    min-height: 100vh;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity .35s ease, transform .35s ease;
+  }
+  .view.active {
+    display: block;
+    opacity: 1;
+    transform: none;
+  }
+
+  .wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  /* ============ 主页 ============ */
+  .masthead {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 44px 0 0;
+  }
+  .masthead .name {
+    font-family: var(--song);
+    font-size: 17px;
+    letter-spacing: .4em;
+  }
+  .masthead .tag {
+    font-family: var(--sans);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: .3em;
+  }
+
+  .home-glyph {
+    display: flex;
+    justify-content: center;
+    margin: 72px 0 20px;
+  }
+  .home-glyph svg { display: block; }
+
+  .spin {
+    animation: spin 120s linear infinite;
+    transform-origin: 50% 50%;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .intro {
+    text-align: center;
+    font-size: 14px;
+    color: var(--muted);
+    font-family: var(--serif);
+    letter-spacing: .32em;
+    margin-bottom: 96px;
+  }
+
+  .catalog {
+    list-style: none;
+    border-top: 1px solid var(--line);
+  }
+  .catalog li { border-bottom: 1px solid var(--line); }
+
+  .post-link {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    padding: 34px 4px;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+  }
+  .post-link .title {
+    font-family: var(--title);
+    font-size: 27px;
+    letter-spacing: 0;
+    transition: transform .3s ease, color .3s ease;
+    white-space: nowrap;
+  }
+  .post-link .dots {
+    flex: 1;
+    border-bottom: 1px dotted var(--line);
+    transform: translateY(-4px);
+    transition: border-color .3s ease;
+  }
+  .post-link .date {
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: .22em;
+    white-space: nowrap;
+  }
+  .post-link::before {
+    content: "";
+    position: absolute;
+    left: -14px;
+    top: 50%;
+    width: 3px; height: 3px;
+    background: var(--cinnabar);
+    border-radius: 50%;
+    transform: translateY(-50%) scale(0);
+    transition: transform .3s ease;
+  }
+  .post-link:hover .title { transform: translateX(14px); color: var(--cinnabar); }
+  .post-link:hover .dots { border-color: var(--cinnabar); }
+  .post-link:hover::before { transform: translateY(-50%) scale(1); }
+
+  .colophon {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 36px 0 64px;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--sans);
+    letter-spacing: .22em;
+  }
+
+  /* ============ 文章页 ============ */
+  .article-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 44px 0 0;
+  }
+  .back {
+    text-decoration: none;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 12px;
+    letter-spacing: .22em;
+    transition: color .3s ease;
+  }
+  .back:hover { color: var(--cinnabar); }
+  .article-head .date {
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: .22em;
+  }
+
+  .article-glyph {
+    display: flex;
+    justify-content: center;
+    margin: 72px 0 8px;
+  }
+  .article-glyph svg { display: block; }
+
+  .article-title {
+    text-align: center;
+    font-family: var(--title);
+    font-weight: normal;
+    font-size: 46px;
+    letter-spacing: 0;
+    margin: 28px 0 72px;
+  }
+
+  .essay {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .lead {
+    text-align: center;
+    font-size: 20px;
+    line-height: 2.0;
+    letter-spacing: .03em;
+    margin-bottom: 88px;
+    padding: 0 8px;
+  }
+
+  .essay p.body {
+    font-size: 17px;
+    line-height: 2.05;
+    text-align: justify;
+    text-indent: 2em;
+    margin-bottom: 1.9em;
+    color: #2c251a;
+  }
+
+  .divider {
+    display: flex;
+    justify-content: center;
+    margin: 64px 0 56px;
+  }
+
+  .ending {
+    text-align: center;
+    margin: 96px 0 120px;
+  }
+  .ending .seal {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 22px;
+  }
+  .ending .sign {
+    font-family: var(--serif);
+    font-size: 16px;
+    letter-spacing: .3em;
+    margin-bottom: 10px;
+  }
+  .ending .era {
+    font-family: var(--sans);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: .28em;
+  }
+
+  /* ============ 响应式 ============ */
+  @media (max-width: 640px) {
+    .post-link { flex-wrap: wrap; gap: 8px; padding: 26px 2px; }
+    .post-link .title { font-size: 22px; white-space: normal; }
+    .post-link .dots { display: none; }
+    .post-link .date { width: 100%; }
+    .post-link:hover .title { transform: none; }
+
+    .article-title { font-size: 32px; }
+    .lead { font-size: 18px; margin-bottom: 64px; }
+    .essay p.body { font-size: 16px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spin { animation: none; }
+    .post-link .title, .post-link .dots, .post-link::before { transition: none; }
+    .view { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ============ 主页 ============ -->
+  <section id="home" class="view">
+    <div class="wrap">
+      <header class="masthead">
+        <span class="name">南山怪客</span>
+        <span class="tag">文集</span>
+      </header>
+
+      <div class="home-glyph">
+        <svg class="spin" width="220" height="220" viewBox="0 0 220 220" fill="none" aria-hidden="true">
+          <circle cx="110" cy="110" r="78" stroke="#241e14" stroke-width="1.1"/>
+          <path d="M 46 174 A 78 78 0 0 1 174 46" stroke="#a63a2b" stroke-width="1.4"/>
+          <line x1="6" y1="110" x2="214" y2="110" stroke="#ddd2bd" stroke-width="1"/>
+          <circle cx="110" cy="32" r="3.2" fill="#a63a2b"/>
+          <circle cx="188" cy="110" r="2.2" fill="#241e14"/>
+        </svg>
+      </div>
+
+      <p class="intro">人生有限 · 因缘无限</p>
+
+      <ul class="catalog" id="catalog"></ul>
+
+      <footer class="colophon">
+        <span>© 2026 南山怪客</span>
+        <span>以文字观照</span>
+      </footer>
+    </div>
+  </section>
+
+  <!-- ============ 文章页 ============ -->
+  <section id="article" class="view">
+    <div class="wrap">
+      <header class="article-head">
+        <a class="back" href="#/">← 返回文集</a>
+        <span class="date" id="article-date"></span>
+      </header>
+
+      <div class="article-glyph">
+        <svg class="spin" width="120" height="120" viewBox="0 0 220 220" fill="none" aria-hidden="true">
+          <circle cx="110" cy="110" r="78" stroke="#241e14" stroke-width="1.6"/>
+          <path d="M 46 174 A 78 78 0 0 1 174 46" stroke="#a63a2b" stroke-width="2"/>
+          <line x1="6" y1="110" x2="214" y2="110" stroke="#ddd2bd" stroke-width="1.4"/>
+          <circle cx="110" cy="32" r="4.4" fill="#a63a2b"/>
+        </svg>
+      </div>
+
+      <h1 class="article-title" id="article-title"></h1>
+
+      <article class="essay">
+        <p class="lead" id="article-lead"></p>
+
+        <div class="divider">
+          <svg width="140" height="14" viewBox="0 0 140 14" fill="none" aria-hidden="true">
+            <line x1="0" y1="7" x2="58" y2="7" stroke="#ddd2bd" stroke-width="1"/>
+            <circle cx="70" cy="7" r="2.6" fill="#a63a2b"/>
+            <line x1="82" y1="7" x2="140" y2="7" stroke="#ddd2bd" stroke-width="1"/>
+          </svg>
+        </div>
+
+        <div id="article-body"></div>
+
+        <div class="ending">
+          <div class="seal">
+            <svg width="46" height="46" viewBox="0 0 46 46" fill="none" aria-hidden="true">
+              <rect x="3" y="3" width="40" height="40" stroke="#a63a2b" stroke-width="1.6"/>
+              <circle cx="23" cy="23" r="9" stroke="#a63a2b" stroke-width="1.3"/>
+              <circle cx="23" cy="23" r="2.4" fill="#a63a2b"/>
+            </svg>
+          </div>
+          <div class="sign">南山怪客</div>
+          <div class="era">二〇二六年三月十二日</div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+<script>
+  // ============ 文集数据（以后加文章，往这里添一条即可） ============
+  const posts = [
+    {
+      id: "1",
+      title: "人生有限，因缘无限",
+      date: "2026 · 03 · 12",          // 主页目录里显示的日期
+      era: "二〇二六年三月十二日",      // 文末落款
+      lead: "当只有知道\u201c无\u201d的时候，才能看到\u201c有\u201d。\u201c无\u201d的前提是\u201c有\u201d，\u201c无我\u201d的前提是\u201c有我\u201d。",
+      paragraphs: [
+        "我有一个体验，以前有段时间读书，我会觉得自己知道了一些东西，似乎我是从书中获得了一些知识，我明确感觉到那个东西，是存在的。",
+        "它甚至有它的界限，你特别想把这种内容告诉别人，而你知道分享了，也就是那块内容本身，你感觉到某种局限性。",
+        "而最近的感受，你虽然读了一些书，但书的轮廓似乎消失了，或者说知识的轮廓消失了，这种感觉就像一滴水落入了水中。也许是知识融会贯通，成了体系的一部分，单独性消失了。",
+        "从有到无的过程，我称为忘我。忘我的前提是意识到\u201c我\u201d，\u201c无\u201d的前提是\u201c有\u201d。",
+        "\u201c有\u201d是某种\u201c得到\u201d，佛教提倡\u201c因缘和合\u201d，是在解释\u201c有\u201d是怎么拥有或怎么形成的。当\u201c有\u201d的本源是\u201c因缘和合\u201d，那幻象的背后就是\u201c无\u201d。",
+        "这里插一下，基督教等，实际是提倡\u201c有\u201d。有父，有子，有圣灵。所以基督教叫有神教。印度是多神教。而佛教，是无神教，叫开悟，叫觉醒。",
+        "因此无，不是凭空出现的，先要有\u201c有\u201d。常提的空\u201d，在我看来，是一种达到\u201c无\u201d的手段。",
+        "想起某次在抖音上刷到的视频：黑暗中，老和尚问，你看到什么？弟子答，什么都看不到。老和尚继续问，弟子答，我看到\u201c黑\u201d。",
+        "看到\u201c黑\u201d不代表什么都没有。黑，存在。这叫，如其所是。最后，师傅打开扇门，一光明涌现，\u201c黑暗\u201d不复存在。",
+        "黑暗和光明，也是某种\u201c因缘和合\u201d的自然现象，\u201c黑色\u201d不过是黑暗的外在形式。我们周围的影像、声音、气味，都是\u201c形式\u201d，形式是\u201c相\u201d。因此，应无所住，而生其心。",
+        "当然，无，不是绝对的。\u201c无\u201d来源于因缘和合。无，是变化的本质；无，是人生有限，因缘无限。无，意味着\u201c抓不住\u201d，\u201c无\u201d是世界运行规律。",
+        "环境变化不由人掌控。忘我，是接受过去那一刻的我，被新的\u201c因缘和合\u201d所影响，所改变。忘我，是在自我的世界里，清楚知道我的样子。",
+        "我抽离到旁边，作为一个旁观者，观察那个和外界互动的自我。观察者的\u201c我\u201d，告诉\u201c自我\u201d，此时此刻，你没意识到因缘和合了。你执着了、你被相迷惑了。",
+        "纠正那个自我，是\u201c消我\u201d、是\u201c空\u201d我，而后自我和环境再次耦合，你从幻象中不断醒来。觉醒，不是一次，觉醒是一次又一次。",
+        "所谓觉悟，是一个不断消我的过程。人无法离开环境，肉身无法不参与环境交互。能做的，就是在这个修行的过程中，不断反观自己，不断叫醒自己，多在事上磨。"
+      ]
+    }
+  ];
+
+  const home = document.getElementById("home");
+  const article = document.getElementById("article");
+  const catalog = document.getElementById("catalog");
+
+  function renderCatalog() {
+    catalog.innerHTML = posts.map(p => `
+      <li>
+        <a class="post-link" href="#/post/${p.id}">
+          <span class="title">${p.title}</span>
+          <span class="dots"></span>
+          <span class="date">${p.date}</span>
+        </a>
+      </li>
+    `).join("");
+  }
+
+  function renderPost(id) {
+    const p = posts.find(x => x.id === id) || posts[0];
+    document.getElementById("article-title").textContent = p.title;
+    document.getElementById("article-date").textContent = p.date;
+    document.getElementById("article-lead").textContent = p.lead;
+    document.getElementById("article-body").innerHTML = p.paragraphs.map(t => `<p class="body">${t}</p>`).join("");
+    document.title = p.title + " · 南山怪客文集";
+    window.scrollTo(0, 0);
+  }
+
+  function route() {
+    const h = location.hash;
+    if (h.startsWith("#/post/")) {
+      renderPost(h.slice(7));
+      article.classList.add("active");
+      home.classList.remove("active");
+    } else {
+      document.title = "南山怪客 · 文集";
+      article.classList.remove("active");
+      home.classList.add("active");
+    }
+  }
+
+  renderCatalog();
+  route();
+  window.addEventListener("hashchange", route);
+</script>
+</body>
+</html>
