@@ -24,19 +24,17 @@
 
   html { scroll-behavior: smooth; }
 
-  /* 纸质感：暖米白底 + 顶部一道微光 + 四周微暖暗角 + 细纤维噪点 */
+  /* 纸质感：淡墨山水画背景 + 细纤维噪点 */
   body {
     background-color: var(--paper);
     background-image:
-      /* 中国山水画：淡墨远山、枯树、飞鸟 */
-      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 900'><path d='M0 360 C140 300 300 340 460 315 C600 295 740 335 900 312 C1050 292 1200 330 1440 300 L1440 900 L0 900 Z' fill='%234a3f33' opacity='0.035'/><path d='M0 470 C180 400 360 450 540 420 C700 392 860 440 1020 415 C1160 394 1300 430 1440 408 L1440 900 L0 900 Z' fill='%234a3f33' opacity='0.065'/><path d='M0 600 C200 530 420 585 620 550 C800 520 1000 580 1200 548 C1320 528 1400 555 1440 540 L1440 900 L0 900 Z' fill='%234a3f33' opacity='0.10'/><g fill='none' stroke='%234a3f33' stroke-linecap='round' opacity='0.14'><path d='M1180 900 C1178 830 1182 760 1186 700 C1190 650 1194 620 1200 595' stroke-width='5'/><path d='M1184 760 C1160 730 1140 705 1120 690' stroke-width='2.5'/><path d='M1188 720 C1210 690 1225 668 1235 652' stroke-width='2.5'/><path d='M1192 680 C1178 655 1170 638 1164 622' stroke-width='2'/><path d='M1200 640 C1215 620 1226 605 1234 592' stroke-width='2'/></g><g fill='none' stroke='%234a3f33' stroke-linecap='round' opacity='0.10'><path d='M320 210 q12 -10 24 0 q12 -10 24 0' stroke-width='2'/><path d='M420 180 q10 -8 20 0 q10 -8 20 0' stroke-width='1.8'/><path d='M360 250 q9 -7 18 0 q9 -7 18 0' stroke-width='1.6'/><path d='M520 230 q11 -9 22 0 q11 -9 22 0' stroke-width='1.8'/><path d='M280 170 q8 -6 16 0 q8 -6 16 0' stroke-width='1.5'/></g></svg>"),
-      /* 顶部微光 + 四周微暖暗角 + 细纤维噪点 */
-      radial-gradient(130% 90% at 50% 12%, rgba(255,255,255,0.62) 0%, rgba(255,255,255,0) 56%),
-      radial-gradient(150% 130% at 50% 50%, rgba(122,98,62,0.075) 0%, rgba(122,98,62,0) 72%),
-      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/></svg>");
-    background-size: cover, auto, auto, auto;
-    background-position: center bottom, center, center, center;
-    background-repeat: no-repeat, no-repeat, no-repeat, repeat;
+      /* 细纤维噪点（叠在山水画上，增加纸感） */
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/></svg>"),
+      /* 调淡后的山水画背景 */
+      url("background.jpg");
+    background-size: auto, cover;
+    background-position: center, center;
+    background-repeat: repeat, no-repeat;
     background-attachment: fixed;
     color: var(--ink);
     font-family: var(--serif);
