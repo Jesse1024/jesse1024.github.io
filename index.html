@@ -473,7 +473,9 @@
     right: 0;
     bottom: 0;
     background: url("background.jpg") center/cover no-repeat;
-    opacity: .28;
+    background-size: var(--bg-scale, 220%);
+    background-position: var(--bg-x, 50%) var(--bg-y, 50%);
+    opacity: .42;
     pointer-events: none;
     z-index: 0;
   }
@@ -937,6 +939,13 @@
     }).join("");
   }
 
+  function randomizeArticleBg() {
+    const el = document.getElementById("article");
+    el.style.setProperty("--bg-scale", Math.round(180 + Math.random() * 80) + "%");
+    el.style.setProperty("--bg-x", Math.round(15 + Math.random() * 70) + "%");
+    el.style.setProperty("--bg-y", Math.round(15 + Math.random() * 70) + "%");
+  }
+
   function renderPost(id) {
     const p = posts.find(x => x.id === id) || posts[0];
     document.getElementById("article-title").textContent = p.title;
@@ -945,6 +954,7 @@
     document.getElementById("article-era").textContent = p.era;
     document.getElementById("article-body").innerHTML = renderBlocks(p.blocks);
     document.title = p.title + " · 南山怪客文集";
+    randomizeArticleBg();
     window.scrollTo(0, 0);
   }
 
