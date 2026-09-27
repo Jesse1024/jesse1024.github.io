@@ -460,6 +460,27 @@
     letter-spacing: .28em;
   }
 
+  /* ===== 文章页：纯白底 + 隐约山水画 ===== */
+  #article.active {
+    background-color: #ffffff;
+  }
+  #article.active::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("background.jpg") center/cover no-repeat;
+    opacity: .15;
+    pointer-events: none;
+    z-index: 0;
+  }
+  #article.active .wrap {
+    position: relative;
+    z-index: 1;
+  }
+
   /* ============ 响应式 ============ */
   @media (max-width: 640px) {
     .post-link { flex-wrap: wrap; gap: 8px; padding: 26px 2px; }
@@ -550,7 +571,7 @@
             <img src="seal-v2.png" alt="印章">
           </div>
           <div class="sign">南山怪客</div>
-          <div class="era">二〇二六年三月十二日</div>
+          <div class="era" id="article-era"></div>
         </div>
       </article>
     </div>
@@ -920,6 +941,7 @@
     document.getElementById("article-title").textContent = p.title;
     document.getElementById("article-date").textContent = p.date;
     document.getElementById("article-lead").textContent = p.lead;
+    document.getElementById("article-era").textContent = p.era;
     document.getElementById("article-body").innerHTML = renderBlocks(p.blocks);
     document.title = p.title + " · 南山怪客文集";
     window.scrollTo(0, 0);
