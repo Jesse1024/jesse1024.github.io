@@ -653,6 +653,11 @@
     </div>
   </section>
 
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" aria-label="关闭">×</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
 <script>
   // ============ 文集数据（按时间倒序，最新排最前） ============
   const posts = [
@@ -1325,10 +1330,6 @@
     if (e.key === "Escape") closeLightbox();
   });
 </script>
-<div class="lightbox" id="lightbox">
-  <button class="lb-close" aria-label="关闭">×</button>
-  <img id="lightbox-img" src="" alt="">
-</div>
 
 </body>
 </html>
