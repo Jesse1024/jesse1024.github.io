@@ -518,6 +518,43 @@
     .post-link .title, .post-link .dots, .post-link::before { transition: none; }
     .view { transition: none; }
   }
+  /* ===== 双击放大 lightbox ===== */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(24, 20, 14, .93);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    cursor: zoom-out;
+    padding: 48px;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 3px;
+    box-shadow: 0 10px 48px rgba(0, 0, 0, .55);
+  }
+  .lightbox .lb-close {
+    position: absolute;
+    top: 22px;
+    right: 32px;
+    width: 44px;
+    height: 44px;
+    border: none;
+    background: none;
+    color: #e8e0d0;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+    opacity: .7;
+    transition: opacity .2s ease;
+  }
+  .lightbox .lb-close:hover { opacity: 1; }
+  .essay figure.figure img { cursor: zoom-in; }
+
 </style>
 </head>
 <body>
@@ -1263,6 +1300,35 @@
   renderCatalog();
   route();
   window.addEventListener("hashchange", route);
+
+  // ===== 双击图片放大 =====
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightbox-img");
+
+  function closeLightbox() {
+    lightbox.classList.remove("open");
+  }
+
+  document.addEventListener("dblclick", function(e) {
+    const img = e.target.closest(".figure img");
+    if (!img) return;
+    lightboxImg.src = img.src;
+    lightbox.classList.add("open");
+    e.preventDefault();
+  });
+
+  lightbox.addEventListener("click", function(e) {
+    if (e.target === this || e.target.classList.contains("lb-close")) closeLightbox();
+  });
+
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") closeLightbox();
+  });
 </script>
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" aria-label="关闭">×</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
 </body>
 </html>
