@@ -452,6 +452,12 @@
     letter-spacing: .14em;
     margin: 10px 0 40px;
   }
+  .essay a {
+    color: var(--cinnabar);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(166, 58, 43, .3);
+  }
+  .essay a:hover { border-bottom-color: var(--cinnabar); }
 
   .essay .cap {
     text-align: center;
@@ -1458,6 +1464,29 @@
       ]
     },
     {
+      id: "14",
+      title: "我的——琐碎日常",
+      date: "2023 · 12 · 14",
+      era: "二〇二三年十二月十四日",
+      category: "essay",
+      lead: "来杭半年之久，惊觉时光匆匆。",
+      blocks: [
+        {type: "p", text: "我想我这半年多的时间和空间大致被分成了这么几块：1.证券【股票、基金、宏观指标】 2.证券类视频制作 3.电影 4.后期软件系统性学习【PR、PS、AE、AU】。"},
+        {type: "p", text: "先对我关于证券相关知识体系进行一下总结，不能说有能力，非常有见解的发表自己对股市的认识，以及对当下中国宏观经济所处状态的评价【美林时钟】，我仅做一个旁观者。经过这半年多的了解，首先是对股市的相关技术指标有了初步的了解（MACD、EMA、MA、KDJ、RSI、ATR、VOL等)，如果展开说，那会是漫长的学习过程和理解过程以及汇总过程、反思过程、纠偏修正过程、破除迷信过程等等。学习下来的感觉是，技术指标是足够的客观，直观反映了当下市场的交易情绪，当然我当下还是相信市场是不可知的，股票当日的交易数据无法提前预测，只有到每天下午的15：00，所有人买定离手会后，这一数据将被记录到历史上的某一天，当未来的人打开股票软件，不经意间，鼠标点击，十字光标定格在这一天，不过是时光尘埃中普通平淡不起眼的小点又或是峰回路转，迎来转机的异象点。我用一组数据来说明一下当下股市的状况，对这一部分暂做一个小结。"},
+        {type: "img", src: "images/img73.webp"},
+        {type: "img", src: "images/img74.webp"},
+        {type: "p", text: "2.视频制作在我看来是一个非常需要综合能力的地方。这段时间主要是补上了视频后期软件的空白，对颜色有了新的基础认识，印象深刻的是颜色的调节，这是一个常学常新的知识领域。"},
+        {type: "img", src: "images/img75.webp"},
+        {type: "fig", text: "飞来峰·灵隐寺"},
+        {type: "p", text: "3.音乐这块，近期比较沉浸纯音乐，坂本龙一的BTTB专辑听到次数比较多、然后波莱罗圆舞曲、蓝色多瑙河听到比较多，不知道为什么歌词太多的歌，听不进去呃。虽然一直在听音乐，但是确实没有细细研究过音乐的结构，不知道该怎么解释或者说解构一下“音乐”，好让这种无孔不入，每天都会占用自己片刻的事物，也能日常被理解。另一个系统了解的是后期软件AE，我觉得人不要设限，不要带着偏见进入一件事物，从新接受，事物就对你开放，被你所理解。我用这种方式，进入了Br和PS、图层、蒙版、遮罩、Camera Raw、曲线、AE、以及Cinéma。关于电影的部分，近一个月阅片数量下降，目前观影体系较为单一，不过还是那些电影能吸引我，法国新浪潮，最近一部片子停留在《我们的音乐》戈达尔作品，探讨巴以问题。"},
+        {type: "img", src: "images/img76.webp"},
+        {type: "fig", text: "我们的音乐 Notre Musique (2004)"},
+        {type: "p", text: "其他推荐电影，你可以在我这篇公众号里找到。"},
+        {type: "link", href: "http://mp.weixin.qq.com/s?__biz=MzI0MTY4NjYzNQ==&mid=2247483844&idx=2&sn=36d14e8e553d92f9ebcf1e46075211d3&chksm=e90680c0de7109d6398f8571240f4d0c7485d1841d47af39f1c4f6fb00bdec9347156ae074ca&scene=21#wechat_redirect", text: "11月-12月Cinéma（电影）推荐", after: "【点此跳转】"},
+        {type: "p", text: "最后，近期学习体系交织、冗杂，不为哗众取宠，博人眼球，写此篇公众号暂做停留和梳理，人在杭州未消失，勿念。"},
+      ]
+    },
+    {
       id: "11",
       title: "“一切都是恩典”——浅谈罗伯特布列松的《乡村牧师日记》",
       date: "2023 · 07 · 08",
@@ -1631,6 +1660,7 @@
       if (b.type === "mark") return `<div class="mark">${b.text}</div>`;
       if (b.type === "cap") return `<div class="cap">${b.text}</div>`;
       if (b.type === "fig") return `<div class="fig">${b.text}</div>`;
+      if (b.type === "link") return `<p class="body"><a href="${b.href}" target="_blank" rel="noopener">${b.text}</a>${b.after || ""}</p>`;
       return `<p class="body">${b.text}</p>`;
     }).join("");
   }
