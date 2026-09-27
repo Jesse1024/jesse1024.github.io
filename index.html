@@ -166,6 +166,74 @@
     letter-spacing: .22em;
   }
 
+  /* ===== 分类页卡 ===== */
+  .categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 22px;
+    margin: 0 0 84px;
+  }
+  .category-card {
+    display: block;
+    border: 1px solid var(--line);
+    padding: 34px 28px;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    background: rgba(244, 236, 220, .35);
+    transition: border-color .3s ease, transform .3s ease;
+  }
+  .category-card:hover {
+    border-color: var(--cinnabar);
+    transform: translateY(-3px);
+  }
+  .category-card .cat-name {
+    font-family: var(--title);
+    font-weight: bold;
+    font-size: 26px;
+    letter-spacing: .02em;
+    display: block;
+  }
+  .category-card .cat-count {
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: .2em;
+    display: block;
+    margin-top: 16px;
+  }
+  .category-card::after {
+    content: "";
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--cinnabar);
+    opacity: 0;
+    transition: opacity .3s ease;
+  }
+  .category-card:hover::after { opacity: 1; }
+
+  /* ===== 分类页 ===== */
+  .category-title {
+    font-family: var(--title);
+    font-weight: bold;
+    font-size: 40px;
+    letter-spacing: .04em;
+    text-align: center;
+    margin: 44px 0 10px;
+  }
+  .category-sub {
+    text-align: center;
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: .22em;
+    margin-bottom: 52px;
+  }
+
   /* ============ 文章页 ============ */
   .article-head {
     display: flex;
@@ -288,6 +356,77 @@
     border-radius: 50%;
   }
 
+  /* ===== 札记排版（投资札记） ===== */
+  .essay .day {
+    font-family: var(--sans);
+    font-size: 13px;
+    letter-spacing: .24em;
+    color: var(--cinnabar);
+    text-align: center;
+    margin: 62px 0 34px;
+  }
+  .essay .day::before,
+  .essay .day::after {
+    content: "";
+    display: inline-block;
+    width: 42px;
+    height: 1px;
+    background: var(--line);
+    vertical-align: middle;
+    margin: 0 14px;
+  }
+  .essay p.note {
+    font-weight: bold;
+    font-size: 16.5px;
+    line-height: 2.05;
+    text-align: justify;
+    color: #2c251a;
+    margin-bottom: 1.7em;
+    padding-left: 1.35em;
+    position: relative;
+  }
+  .essay p.note::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: .62em;
+    bottom: .62em;
+    width: 2px;
+    background: var(--cinnabar);
+    opacity: .5;
+  }
+  .essay p.sub-note {
+    font-weight: bold;
+    font-size: 15.5px;
+    line-height: 2.0;
+    text-align: justify;
+    color: #4a4030;
+    margin-bottom: 1.35em;
+    padding-left: 2.5em;
+    position: relative;
+  }
+  .essay p.sub-note::before {
+    content: "";
+    position: absolute;
+    left: 1.3em;
+    top: .95em;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--cinnabar);
+    opacity: .5;
+  }
+  .essay figure.figure {
+    margin: 36px 0;
+    text-align: center;
+  }
+  .essay figure.figure img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(36, 30, 20, .08);
+  }
+
   .divider {
     display: flex;
     justify-content: center;
@@ -363,6 +502,8 @@
 
       <p class="intro">时间·只是一种幻觉</p>
 
+      <div class="categories" id="categories"></div>
+
       <ul class="catalog" id="catalog"></ul>
 
       <footer class="colophon">
@@ -415,6 +556,26 @@
     </div>
   </section>
 
+  <!-- ============ 分类页 ============ -->
+  <section id="category" class="view">
+    <div class="wrap">
+      <header class="article-head">
+        <a class="back" href="#/">← 返回首页</a>
+        <span class="date">分类</span>
+      </header>
+
+      <h1 class="category-title" id="category-title"></h1>
+      <p class="category-sub" id="category-sub"></p>
+
+      <ul class="catalog" id="category-catalog"></ul>
+
+      <footer class="colophon">
+        <span>© 2026 南山怪客</span>
+        <span>以文字观照</span>
+      </footer>
+    </div>
+  </section>
+
 <script>
   // ============ 文集数据（按时间倒序，最新排最前） ============
   const posts = [
@@ -423,6 +584,7 @@
       title: "多久没感受过一场雨停了",
       date: "2026 · 06 · 17",
       era: "二〇二六年六月十七日",
+      category: "essay",
       lead: "这是一篇非常琐碎的杂文。聊一聊我关注到的一些东西——感受、时间、记忆、梦境、电影、AI、股票、佛教。",
       blocks: [
         {type: "h2", text: "雨水与记忆"},
@@ -512,6 +674,7 @@
       title: "人生有限，因缘无限",
       date: "2026 · 03 · 12",
       era: "二〇二六年三月十二日",
+      category: "essay",
       lead: "当只有知道\u201c无\u201d的时候，才能看到\u201c有\u201d。\u201c无\u201d的前提是\u201c有\u201d，\u201c无我\u201d的前提是\u201c有我\u201d。",
       blocks: [
         {type: "p", text: "我有一个体验，以前有段时间读书，我会觉得自己知道了一些东西，似乎我是从书中获得了一些知识，我明确感觉到那个东西，是存在的。"},
@@ -530,12 +693,173 @@
         {type: "p", text: "纠正那个自我，是\u201c消我\u201d、是\u201c空\u201d我，而后自我和环境再次耦合，你从幻象中不断醒来。觉醒，不是一次，觉醒是一次又一次。"},
         {type: "p", text: "所谓觉悟，是一个不断消我的过程。人无法离开环境，肉身无法不参与环境交互。能做的，就是在这个修行的过程中，不断反观自己，不断叫醒自己，多在事上磨。"}
       ]
-    }
+    },
+    {
+      id: "3",
+      title: "股市《灵感》札记：1、时间是根本之谜",
+      date: "2024 · 04 · 10",
+      era: "二〇二四年四月十日",
+      category: "invest",
+      lead: "我想时间是一个根本之谜，其他东西顶多只是难以理解。",
+      blocks: [
+        {type: "quote", text: "如果一个人在梦中，穿过了极乐之地。保留下一朵花作为他经过的证据。醒来时，发现这朵花在他的手里，该说些什么？我就是那个人。——戈达尔"},
+        {type: "p", text: "这段时间最大的感悟是，时间是根本之谜。道氏理论揭示了趋势的存在、波浪理论用分形解构了趋势、而他们都没有解决一个问题，那就是趋势究竟在什么时间下才会发生反转？这就自然引出一个问题，何为“时间”。而江恩理论必定会出现在股市中，江恩试图揭示“时间”这个根本之谜，未解之谜。"},
+        {type: "img", src: "images/img0.webp"},
+        {type: "p", text: "另外一点是，股市是一个人的战场，思维的战场，想象力的战场，对手是“上帝”、对手是“虚构的千军万马”，德国证券教父安德烈·科斯托拉尼说，投机并非一门科学，而是一场艺术。我也将自己这段时间的一些思考，按照线性时间的方式，记录了下来。其中很多问题，总是会追问到本源问题，让人困惑不已。（建议阅读时，可以选择一日，内容从下往上读，因为我的思考，在这个过程中不断修正，有些或许又不断被重复；同时如果你在阅读时，会出现语病或者不连贯问题，可以只浏览其大意，理解即可。因为这些是我怕转瞬即逝，随手记下的，未作任何改正，语言文字本身有时又是一种阻碍，不是吗。）"},
+        {type: "day", text: "2024.4-10"},
+        {type: "note", text: "当你成为规律本身的时候，规律便被你发现。有没有一种可能，大自然本身运转是规律的。而人类活动是不规律的。隔一段时间就发生一下，体现了人类情绪的反复。而，人类总是觉得是大自然赋予了人类某种规律。也许，是一两次，人类和大自然的部分同频共振，仅此而已。人类却妄图，用这种规律指导下一次人类的规律。"},
+        {type: "day", text: "2024.4-9"},
+        {type: "note", text: "人心不古，意味着波动性。"},
+        {type: "note", text: "这就是顺从大趋势。当主力提前决定了，今日的大趋势向下的时候，其他人的小趋势已经对股价不起任何作用了。这种大趋势是超前的，甚至没有征兆的。唯一能对抗这种逆势的，是对波动性的敬畏，人心不古，是从古至今保留的DNA。"},
+        {type: "img", src: "images/img1.webp"},
+        {type: "day", text: "2024.4.8"},
+        {type: "note", text: "人的理智是逐渐丧失的，一开始有基本面，政策面利好，利空。股价依次反映。而一旦长涨，长跌。持股人的情绪就会失控，感性开始凌驾于感性分析之上。股市价格，和市场彻底失去联系。作为一名场外隔岸观火的投机者，应该在情绪至极的地方。参与博弈。【例如，恐慌至极的股价最低点介入。贪婪至极的股价最高点，止盈离场】"},
+        {type: "note", text: "什么是好故事？好故事是永远讲不完的好故事。【一个是质量上的精彩程度，一个是时间纬度的长】"},
+        {type: "note", text: "在股市中，同样如此。这就是人性。人，活在一个又一个偏见之中。人，注定一生都要为自己的偏见，买单。修正，一个又一个偏见，才能接近事物的本质。股票的博弈性，在于你得提前想到其他人的想法。而且是及其合理的理由。越理性越好。你得提前交易这个预期，而且相信大众会跟上你的思路预期。趋势便由此形成。也就是，以前地上本没有路，想象力的人，想象出了一条路。后来的人，确实一步一会脚印踩出来了路。"},
+        {type: "day", text: "2024.4-7"},
+        {type: "note", text: "股市里，博弈或者投机。不是今天晴天，就全部押注明天降雨。而是今天雨天，今天或者明天大概率还是降雨。这就是大自然的趋势。操作上，就像农民，雨天来临之前做好风险。以及损失的可能性。"},
+        {type: "note", text: "应该将小部分资金博弈大的风险。杠铃法则。"},
+        {type: "note", text: "股市是各个参与人类的各种选择的博弈结果。而有些选择，往往超乎其运行趋势。也就是说，和大部分的，又或者说。和纯数学上的预测，相违背。原因就是，人性有时候是趋势性的，有时候是反趋势性的。例如，按道理，希特勒攻进巴黎的时候，巴黎股市应该崩溃，而有人就是赌了一把繁荣。"},
+        {type: "note", text: "现在就是未来，未来就是过去。过去就是现在。"},
+        {type: "note", text: "股市中，支撑位和压力位的本质是："},
+        {type: "sub", text: "1. 【支撑位】在这个价格区间的持股人，如果股价突破该位置，这部分群体不会将股票轻易卖出，还会期望股价继续上涨。当然，有一个大的前提是，此时的股价在相对的中低位。高位往往会有人期望获利了结。当然，这里的股价高位是没有加上时间的纬度，如果考虑此纬度，那么股价短期内迅速达到高点，会相较于股价慢慢达到高点(上升通道中)，更具有不稳定性。(你也可以理解为斜率)。因此，需要验证，支撑位。结合分时成交，观察这个位置，是主卖还是主买。"},
+        {type: "sub", text: "2. 反之。"},
+        {type: "note", text: "一鼓作气，再而衰，三而竭。彼竭我盈。"},
+        {type: "note", text: "事物的产生变化，变化产生就是周期产生，周期就是时间。"},
+        {type: "note", text: "市场本没有方向，选择的人多了，也就产生了方向。(趋势)"},
+        {type: "note", text: "美国道琼斯1884；电影诞生1895"},
+        {type: "note", text: "股市里没有上帝，人类是自己的上帝。大自然中没有上帝，大自然是自己的上帝。"},
+        {type: "day", text: "2024.4-6"},
+        {type: "note", text: "幸福的人都是相似的，不幸的人各有各的不幸。安娜•卡列林娜。"},
+        {type: "note", text: "股市供不应求，股价就会上涨。而股市下跌时，一家企业仍然可以实现不错的利润，可以给股东可观的分红。"},
+        {type: "p", text: "总结就是："},
+        {type: "sub", text: "1. 股价在下跌过程中，成交量一次比一次大，说明有人(勇敢者，看多者)愿意接盘买进。这部分股票会等待下跌反弹时将其卖出。"},
+        {type: "sub", text: "2. 股价下跌中，无量下跌，意味着市场前景不容乐观。意味着，股票还在胆小鬼手里(看空者)。卖出股票于他们而言，只是时间问题。"},
+        {type: "sub", text: "3. 所以，要谨慎对待市场中的一种常见观点：大交易量，情况下的股市上涨是有利可图的。只有，小成交量，甚至无交易量，情况下仍然看涨，才是绝对有利可图。"},
+        {type: "p", text: "用科斯托拉尼的书中话总结："},
+        {type: "p", text: "如果市场在交易量很小的情况下↑或者↓，这意味着它还会持续↑或者持续↓。如果，市场在越来越大的交易量下，↑或者↓，这种趋势是不会持久的。"},
+        {type: "p", text: "【自己对这句总结的理解】"},
+        {type: "sub", text: "1. 往往国内的a股市场中，可以看到，放量集中的那一部分，股价是上涨最凶猛的。但作为交易者，应该在这波上涨之前已经提前介入。而不是等，成交量已经放出来了。这意味着，很多人已经进场了。这时候很可能就是第三阶段了。"},
+        {type: "p", text: "ema12.50攻守线，金叉。其实是意味着，短期股价在向长期股价回归。如果，是回归一定得让股价上涨。所以，看到短期均线拐头，是一种上涨的征兆。其他的技术指标应该还可以观察出这些早于市场大众的征兆点。例如，macd指标。底部金叉，是短线靠近长线，而macd中，dif上穿0轴，是两条，均线金叉出现。"},
+        {type: "sub", text: "2. 下跌缩量，并不是一定是一件好事。有人经常会说，下跌缩量，恐慌资金未出逃。但，恐慌资金不出逃，胆小鬼卖股票只是迟早的事情。所谓一鲸落(卖空者，当然他们开始是看多者，因为很多负面消息，慢慢转化为看空者)而万物生。"},
+        {type: "sub", text: "3. 由此可以引申出另一个指标。就是换手率。换手率是成交量和流通股本的比值，有个说法是，市场的情绪观察指标中，换手率＞成交量。高换手率的核心本意就是描述，股票从胆小鬼到勇敢者的转换。指标本身没有明确显示，最终股票到了谁的手中。"},
+        {type: "p", text: "也许可以做推测，结合股价趋势，如果下跌趋势，而换手率不断提升，意味着，股票从看空者到了看多者手中。反之。"},
+        {type: "sub", text: "4. 之前看过一个策略，macd底部金叉叠加，高换手率。其实，这个策略描述的就是，股价下跌途中，价格有反弹迹象，同时高的换手，意味着，股票经常了多空的转换。而大概率是，由空到多。接下来，有利于，上涨趋势的延续。"},
+        {type: "day", text: "2024.4-4"},
+        {type: "note", text: "人拥有两只眼睛，一只眼睛聚焦当下，一只眼睛投向未来。两只眼睛的影像重叠，将影像传递给大脑。这也许就是，影像淡入淡出的最初灵感来源。"},
+        {type: "note", text: "道氏理论核心，顺大逆小。"},
+        {type: "note", text: "承接上条，其实也就是可以看出来。"},
+        {type: "p", text: "一个股票是周线经常波动一次，还是月线波动一次。还是年线波动一次。周期品种就确定了。而周期品种的确定则是一件需要大量研究的事情。"},
+        {type: "p", text: "就像农民播种到丰收，农作物本身是有周期的。这种自然的周期是经过不断经验的累积总结出来的。"},
+        {type: "p", text: "假如，假设种麦子，就得半年。"},
+        {type: "p", text: "而，买股票，如果半年线下跌中，就意味着这只股票目前来看不能拿半年，但月线上在走上升了。意味着，周线可以持有。"},
+        {type: "p", text: "周线上 根据 道氏理论 低点不断下降，直至 大阴线一根破位 ；趋势发生反转。"},
+        {type: "p", text: "但本质是，从日线观察，日线上(小趋势)已经提前发生下跌趋势。周线破位是迟早的事情。"},
+        {type: "p", text: "联系到波浪理论，有条规定是，小周期不会穿越大周期。就是大周期上是下跌的，小周期里，多头实力不会太强，利空。"},
+        {type: "p", text: "反之，大周期上行，空头实力不会太强，利多。"},
+        {type: "p", text: "从上面这个案例可以推出，日线因为多头不强，导致了周线破位。"},
+        {type: "note", text: "实战中："},
+        {type: "sub", text: "1. 应该看周线，趋势，做日线交易。"},
+        {type: "p", text: "如果周线空，日线要么就不做了。"},
+        {type: "p", text: "周线空，有利于，日线交易者卖出股票比较准确。"},
+        {type: "sub", text: "2. 周线趋势多，做日线交易多。卖出时间应该看，60分钟线。"},
+        {type: "note", text: "合格的农民应该是最会炒股的人。因为他知道敬畏规律，敬畏周期。同时提前应对风险。"},
+        {type: "img", src: "images/img2.webp"},
+        {type: "note", text: "接个上条总结：核心就是，波浪理论的第三浪，绝对不是最小的波浪，来源于道氏理论。因为只有确定了，第三浪不是最小的波浪。"},
+        {type: "sub", text: "1. 最长的波浪，会反馈给第一浪，两两加成，会让趋势延续。"},
+        {type: "sub", text: "2. 和第一浪对等的波浪，还是会反馈给第一浪，两两加成，会让趋势延续。不过这种会比第一种，稍微概率低一点。"},
+        {type: "sub", text: "3. 如果直接是最小的波浪，趋势就大概率会反转。趋势结构就不稳定了。出现了分歧。情况较为复杂。"},
+        {type: "p", text: "所以，最稳定的波浪结构，或者说趋势结构，就是3浪结构。"},
+        {type: "p", text: "也就是说"},
+        {type: "sub", text: "1. 如果 一波下跌 趋势中 主要运动 衰竭 次波的反弹幅度和上一个次波运动对等，那么次波运动大概率变成 主要趋势运动；下跌趋势发生了 反转。"},
+        {type: "sub", text: "2. 反之 如果 一波上涨趋势中 主要运动 衰竭 大概率次波运动 开始变 主要趋势 ；整个上涨趋势衰竭 转头向下概率加大。"},
+        {type: "p", text: "总结来说 这和波浪理论及其相似 波浪理论中的 第三浪 绝对不会是 最小的波浪 其实某种程度上 是在讲，这波对趋势的关键性确定。"},
+        {type: "note", text: "孤山寺北贾亭西，水面初平云脚低。"},
+        {type: "p", text: "几处早莺争暖树，谁家新燕啄春泥。"},
+        {type: "p", text: "乱花渐欲迷人眼，浅草才能没马蹄。"},
+        {type: "p", text: "最爱湖东行不足，绿杨阴里白沙堤。"},
+        {type: "p", text: "—趋势理论。"},
+        {type: "note", text: "高低点的确认是，趋势反转的标准。"},
+        {type: "day", text: "2024.4-2"},
+        {type: "note", text: "承接上条，就是一旦事情发生，不要百分百肯定某件事，导致了结果。这不一定是原因。进而要重视，事情的发生，可能会导致的下一个未发生的结果。历史经验的作用在于，参考。"},
+        {type: "p", text: "把因果，换成，正负反馈。例如，原始人野外被野兽攻击，险些丧命。"},
+        {type: "p", text: "反馈的结果是，下次出门会带武器。"},
+        {type: "p", text: "这个事件中，应该禁止使用，因为原始人被野兽攻击，所以下次出门带武器，也有可能带盔甲，也有可能还是不带任何东西。因为a，可能会导致b.c.d.e.f.g.这些都是结果。"},
+        {type: "p", text: "而，如果用结果去推测原因，会是h.i.j.k.等等。"},
+        {type: "note", text: "趋势交易者，大趋势反转进，60分钟级别小趋势走坏卖。"},
+        {type: "note", text: "承接上条，银行、高姑息股是大资金的避风港。巨鲸股，是大资金的坐骑。大资金才是市场的巨鲸，方向的引领者。"},
+        {type: "p", text: "(巨鲸，有理由是一轮板块行情里全方面利好的承载者，大资金理应交易该只个股。)"},
+        {type: "p", text: "而大资金集体配置的个股，会是航海家们的北极星。北极星的指引，会引导，趋势的发展。观察，一颗市场中，耀眼的北极星。会让你对大势有更多理解。"},
+        {type: "p", text: "例如："},
+        {type: "sub", text: "1. 大盘创新低，而茅台不在继续下跌。"},
+        {type: "p", text: "可以理解为，大盘反转时点。当然，关键还是观察周期，只能较平时，更大一点的周期，才能确定性更好。"},
+        {type: "sub", text: "2. 大盘指数创新高，而茅台不在继续大涨。"},
+        {type: "p", text: "也意味着大盘即将封顶。"},
+        {type: "img", src: "images/img3.webp"},
+        {type: "img", src: "images/img4.webp"},
+        {type: "img", src: "images/img5.webp"},
+        {type: "note", text: "过去一定重塑着现在，现在受过去影响。现在也在修正着过去。"},
+        {type: "note", text: "承接上条："},
+        {type: "p", text: "趋势交易者应该在极致区域进行交易。"},
+        {type: "p", text: "(但有个前提，股票基本面要过关。要是不死鸟。)"},
+        {type: "p", text: "因为，极度恐慌，和极度贪婪往往是人性至极的地方。"},
+        {type: "sub", text: "1. 极度贪婪，也就是股价高位时，群体性(深陷其中者)会反映出股价还会创新高，会加大买入力度。而理性人，需要卖出，终止贪婪，当然因为趋势的力量，或者因为盲目贪婪的力量，股价还会继续上升，但速度会越来越慢，这时候股价大概率下挫。"},
+        {type: "p", text: "【重点:也许这时候可以根据，RSI强弱指标，判断，RSI冲上80后，横向走或者出现拐头向下，如果刺破80线，可以选择止盈离场"},
+        {type: "p", text: "又或者可以根据，ema 长短均线，死叉，其实就是描述，两均线迅速聚拢，速度下滑，上涨无力的表现。】"},
+        {type: "sub", text: "2. 极度恐慌，是股价连续下跌时。群体性，会加剧下跌过程。而理性人可以考虑进场。"},
+        {type: "p", text: "还是技术指标，RSI出现，拐头向上穿过30等。或者MACD出现，底部金叉。这本身就是一种，速度减缓的征兆。意味着，跌无可跌。但macd只是对价格的判断。缺乏成交量的再度确认。所以。macd叠加成交量放大。其实描述的就是。股价处在底部减速区域，有些人开始做交易的信号。也许会形成又一波上涨趋势。"},
+        {type: "p", text: "之所以会出现，上涨趋势失败。影响的因素很多。如果是基本面问题，或者其他不可逆因素。这只股价，趋势形成就会有问题。"},
+        {type: "p", text: "因此标的很重要。而且，踩准。群体性情绪的引燃点很重要。(这就具体到各种利好因素上了，会很多很多因素)。"},
+        {type: "p", text: "若股价出现极值区域，(极低、极高时)"},
+        {type: "p", text: "股市是对理性人的终极考验(股价创新高，是极度贪婪，任由贪婪情绪支配，还是理性回归其原有价值；股价持续新低，还要继续恐慌？)"},
+        {type: "note", text: "承接上条"},
+        {type: "p", text: "不要在分歧中，信息混沌中买卖股票。(正如不要在模棱两可中，做出选择，那是赌天运)"},
+        {type: "p", text: "趋势交易者，永远在趋势中做交易。"},
+        {type: "p", text: "而且一定是在趋势形成早期进场，而不是趋势彻底形成后进场，那是后知后觉者。很有可能是第三波进场的人，如果趋势崩盘，大概率没办法全身而退。而趋势早期交易者，会在最后的趋势崩盘前，收获丰厚利润，离场。如果是系统性风险，黑天鹅事件，会让大部分收益，回吐。所以，通过杠铃法则，80%获利了结，也许是不错的选择。学会敬畏市场。敬畏人性(极度恐慌和极度贪婪)。"},
+        {type: "note", text: "结合上条："},
+        {type: "p", text: "如果说群体性(大盘)的多、空，1.出现股价上涨。证明是趋势形成的前期。2.如果此时伴随着成交量的逐步，放大(买与卖的情绪)。这段趋势(这波情绪)会再次得到验证。"},
+        {type: "sub", text: "3. 但周期永远是未解之谜。(正如博尔赫斯所言。)趋势开启之后，谁都无法知道他会在什么地方终结，4.第一个理性的人(也是未知)，产生低价主动卖出行为，第二个人产生卖出行为。直到一传二，二传三，恐慌情绪蔓延，股价指数性暴跌，终结这段趋势，大多数人回到现实。"},
+        {type: "p", text: "也就是，周期望望能发现转折点。"},
+        {type: "p", text: "较短的周期，会形成噪声。"},
+        {type: "p", text: "较大的周期，会过滤掉，关键节点。(正如路遥在平凡的世界中所言，人生是由重要的转折，关键几个步骤构成的)。"},
+        {type: "p", text: "如何确定一波行情的周期，便显的尤为重要，正如，一天有24个小时，形成白昼与黑夜。那行情的涨跌如何识别周期。"},
+        {type: "p", text: "周期就是波动，交替。"},
+        {type: "p", text: "每个事物都有不同周期。"},
+        {type: "p", text: "可以先说一个我观察到的周期，低价股因为风险相对较小，所以周期，涨跌相对稳定。"},
+        {type: "p", text: "推出来就是，股价低点，望望人心比较稳定。而一旦股价上涨，就会让股价进入剧烈波动区间。(至少是相对于低位股价来说)。股价越高，波动风险可能会越大。也就是说，趋势在早期，趋势越稳定。成交量也是相对较小。随着大盘(或者说整个相关板块或者，一两，三，四个关联个股，开始出现成交量放大，伴随着股价抬升，我认为此处成交量和股价抬升分不清先后顺序)上涨，第二个，买入机会便出现了。"},
+        {type: "p", text: "更多人发现板块大涨，是多数人在第三个趋势阶段买入。也是上涨幅度，不是最小的一波上涨(这里和波浪理论的第三浪要求结构太像了)。因为，消息如果越混沌，情绪越混沌。很可能迎来第四，第五次买入机会。但越往后，风险越大。"},
+        {type: "p", text: "同时如果，一波拉升幅度过大。就会一波透支所有利好消息。如果没有更大利好支撑。群体性的期望就会瞬间崩塌。股价会踩踏式或者地震式，崩盘。趋势宣告结束。"},
+        {type: "p", text: "对，道氏理论，波浪理论，正负反馈，趋势形成等的思考。"},
+        {type: "day", text: "2024.4-1"},
+        {type: "note", text: "结合上条，有点正负反馈意思。"},
+        {type: "note", text: "道氏理论，强调大盘与个股的互相印证，也许是在确定，群体与个股的交易情绪。"},
+        {type: "p", text: "换句话说，因为看到群体的异动，所以确定了趋势的基础。因而选择个股，便只是顺势而为了。道氏理论思考。"},
+        {type: "p", text: "是正、反向反馈与天然信息差(混乱区域)"},
+        {type: "p", text: "促成了某种多、空趋势的延伸。"},
+        {type: "p", text: "利用或者是借助，混乱区域(群体混乱)特性。"},
+        {type: "p", text: "完成交易的买入和卖出。"},
+        {type: "note", text: "乐音是有序的，噪音是无序的。"},
+        {type: "p", text: "股票涨跌，呈现趋势性，有惯性。"},
+        {type: "p", text: "如果，涨跌不交替，完全无序。"},
+        {type: "p", text: "可以选择有秩序的市场或者标的交易。道氏理论思考。"},
+        {type: "day", text: "2024.3-30"},
+        {type: "note", text: "道生一，一生二，二生三，三生万物。万物负阴而抱阳。波浪理论。"},
+      ]
+    },
+  ];
+
+  // ============ 分类 ============
+  const categories = [
+    { slug: "essay", name: "日常随笔" },
+    { slug: "invest", name: "投资札记" }
   ];
 
   const home = document.getElementById("home");
   const article = document.getElementById("article");
+  const categoryView = document.getElementById("category");
   const catalog = document.getElementById("catalog");
+  const categoriesEl = document.getElementById("categories");
+  const categoryCatalog = document.getElementById("category-catalog");
 
   function renderCatalog() {
     catalog.innerHTML = posts.map(p => `
@@ -549,12 +873,44 @@
     `).join("");
   }
 
+  function renderCategories() {
+    categoriesEl.innerHTML = categories.map(c => {
+      const n = posts.filter(p => p.category === c.slug).length;
+      return `<a class="category-card" href="#/cat/${c.slug}">
+        <span class="cat-name">${c.name}</span>
+        <span class="cat-count">${n} 篇</span>
+      </a>`;
+    }).join("");
+  }
+
+  function renderCategoryPage(slug) {
+    const c = categories.find(x => x.slug === slug) || categories[0];
+    const list = posts.filter(p => p.category === c.slug);
+    document.getElementById("category-title").textContent = c.name;
+    document.getElementById("category-sub").textContent = "共 " + list.length + " 篇";
+    categoryCatalog.innerHTML = list.map(p => `
+      <li>
+        <a class="post-link" href="#/post/${p.id}">
+          <span class="title">${p.title}</span>
+          <span class="dots"></span>
+          <span class="date">${p.date}</span>
+        </a>
+      </li>
+    `).join("");
+    document.title = c.name + " · 南山怪客文集";
+    window.scrollTo(0, 0);
+  }
+
   function renderBlocks(blocks) {
     return blocks.map(b => {
       if (b.type === "h2") return `<h2 class="section">${b.text}</h2>`;
       if (b.type === "h3") return `<h3 class="sub">${b.text}</h3>`;
       if (b.type === "quote") return `<blockquote>${b.text}</blockquote>`;
       if (b.type === "list") return `<ul class="essay-list">${b.items.map(i => `<li>${i}</li>`).join("")}</ul>`;
+      if (b.type === "day") return `<div class="day">${b.text}</div>`;
+      if (b.type === "note") return `<p class="note">${b.text}</p>`;
+      if (b.type === "sub") return `<p class="sub-note">${b.text}</p>`;
+      if (b.type === "img") return `<figure class="figure"><img src="${b.src}" alt="" loading="lazy"></figure>`;
       return `<p class="body">${b.text}</p>`;
     }).join("");
   }
@@ -575,13 +931,21 @@
       renderPost(h.slice(7));
       article.classList.add("active");
       home.classList.remove("active");
+      categoryView.classList.remove("active");
+    } else if (h.startsWith("#/cat/")) {
+      renderCategoryPage(h.slice(6));
+      categoryView.classList.add("active");
+      home.classList.remove("active");
+      article.classList.remove("active");
     } else {
       document.title = "南山怪客 · 文集";
       article.classList.remove("active");
+      categoryView.classList.remove("active");
       home.classList.add("active");
     }
   }
 
+  renderCategories();
   renderCatalog();
   route();
   window.addEventListener("hashchange", route);
