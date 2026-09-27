@@ -514,8 +514,8 @@
     right: 0;
     bottom: 0;
     background: url("background.jpg") center/cover no-repeat;
-    background-size: var(--bg-scale, 220%);
-    background-position: var(--bg-x, 50%) var(--bg-y, 50%);
+    transform: scale(var(--bg-scale, 2.2));
+    transform-origin: var(--bg-x, 50%) var(--bg-y, 50%);
     opacity: .42;
     pointer-events: none;
     z-index: 0;
@@ -1667,7 +1667,7 @@
 
   function randomizeArticleBg() {
     const el = document.getElementById("article");
-    el.style.setProperty("--bg-scale", Math.round(180 + Math.random() * 80) + "%");
+    el.style.setProperty("--bg-scale", (1.8 + Math.random() * 0.8).toFixed(2));
     el.style.setProperty("--bg-x", Math.round(15 + Math.random() * 70) + "%");
     el.style.setProperty("--bg-y", Math.round(15 + Math.random() * 70) + "%");
   }
