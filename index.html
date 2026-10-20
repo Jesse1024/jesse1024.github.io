@@ -96,7 +96,7 @@ html,body{height:100%;margin:0;background:#04050a;overflow:hidden;
     <button type="button" id="btn-reader">阅读版</button>
     <button type="button" id="btn-random">随便一篇</button>
     <button type="button" id="btn-lamp">台灯 开</button>
-    <button type="button" id="btn-sound" aria-pressed="false">声音 关</button>
+    <button type="button" id="btn-sound" aria-pressed="false">声音 音效</button>
   </nav>
 </header>
 <footer class="hud bottom">
@@ -435,7 +435,7 @@ var S3 = {
   lampOn: true, lampLevel: 1, powerOn: true, bright: 1, noiseLv: 1,
   screenMat: null, screenTex: null, glitch: 0, power: 0, powerAt: 0, powerOffAt: -1e9,
   flash: 0, tapes: [], keys: {}, buttons: [], led: null, lampLight: null, lampBulb: null,
-  screenLight: null, winLight: null, hoverObj: null, soundOn: false, rainTex: null
+  screenLight: null, winLight: null, hoverObj: null, soundOn: false, sndMode: 1, rainTex: null
 };
 
 /* ---------- 搭场景 ---------- */
@@ -690,7 +690,7 @@ function buildMonitor(FRONT){
   lab.position.set(-1.8, -18.0, FRONT + .02); lab.raycast = function(){}; body.add(lab);
 
   // 6 个按钮
-  var btnTips = ["上一页","下一页","随便一篇","阅读版","声音 开/关","电源 开/关"], btnActs = ["prev","next","random","reader","sound","power"];
+  var btnTips = ["上一页","下一页","随便一篇","阅读版","声音：音效 / 全开 / 静音","电源 开/关"], btnActs = ["prev","next","random","reader","sound","power"];
   for (var b = 0; b < 6; b++){
     var bm = new THREE.MeshStandardMaterial({color:b === 5 ? 0x9a3a2c : 0x8d846d, roughness:.45, metalness:.05, emissive:0x000000});
     var bt = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.7, 1.4), bm);
@@ -1025,7 +1025,7 @@ function buildClock(){
 function clockRing(){
   S3.clockRing && S3.clockRing();
   var d = new Date(); say("现在 " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2));
-  if (!S3.soundOn || !AC) return;
+  if (!sfxOK()) return;
   var t0 = AC.currentTime;
   for (var i = 0; i < 26; i++){
     var st = t0 + i * .055, o = AC.createOscillator(), o2 = AC.createOscillator(), g = AC.createGain();
@@ -1181,16 +1181,16 @@ function doAction(act, data, obj){
     case "reader": click(); showReader(true); break;
     case "sound": click(); toggleSound(); break;
     case "power": togglePower(); break;
-    case "bright": click(); S3.bright = S3.bright > 1.2 ? .75 : (S3.bright < .9 ? 1 : 1.35); obj && (obj.userData.turn = (obj.userData.turn || 0) + 1.2);
+    case "bright": sfxKnob(); S3.glitch = Math.max(S3.glitch, .2); S3.bright = S3.bright > 1.2 ? .75 : (S3.bright < .9 ? 1 : 1.35); obj && (obj.userData.turn = (obj.userData.turn || 0) + 1.2);
       say("亮度：" + (S3.bright > 1.2 ? "亮" : S3.bright < .9 ? "暗" : "中")); break;
-    case "noise": click(); S3.noiseLv = S3.noiseLv >= 3 ? 0 : S3.noiseLv + 1; obj && (obj.userData.turn = (obj.userData.turn || 0) + 1.2);
+    case "noise": sfxKnob(); S3.glitch = Math.max(S3.glitch, .2); S3.noiseLv = S3.noiseLv >= 3 ? 0 : S3.noiseLv + 1; obj && (obj.userData.turn = (obj.userData.turn || 0) + 1.2);
       say("杂讯：" + ["无","低","中","高"][S3.noiseLv]); break;
     case "tape": tape(data); break;
     case "lamp": toggleLamp(); break;
-    case "thunder": S3.meteor && S3.meteor(); say("一颗流星"); break;
+    case "thunder": S3.meteor && S3.meteor(); sfxMeteor(); say("一颗流星"); break;
     case "key": clack(); break;
     case "clock": clockRing(); break;
-    case "photo": clack(); S3.photoWob && S3.photoWob(); say("相框：晃了一下"); break;
+    case "photo": sfxKnock(); S3.photoWob && S3.photoWob(); say("相框：晃了一下"); break;
   }
 }
 function click(){ S3.glitch = Math.max(S3.glitch, .35); beep(); }
@@ -1208,13 +1208,13 @@ function flip(d){
   say("第 " + (page + 1) + " / " + PAGES + " 页");
 }
 function tape(key){
-  S3.glitch = 1; beep();
+  S3.glitch = 1; sfxTape();
   filterCat = (filterCat === key) ? null : key;
   recomputeView();
   say("栏目：" + (filterCat ? CATS[filterCat].n : "全部") + "（" + view.length + " 篇）");
 }
 function toggleLamp(){
-  S3.lampOn = !S3.lampOn; clack();
+  S3.lampOn = !S3.lampOn; sfxLamp(S3.lampOn);
   document.getElementById("btn-lamp").textContent = "台灯 " + (S3.lampOn ? "开" : "关");
   say(S3.lampOn ? "台灯：开" : "台灯：关");
 }
@@ -1226,7 +1226,7 @@ function thunder(){
 function togglePower(){
   S3.powerOn = !S3.powerOn;
   if (S3.powerOn) S3.powerAt = performance.now(); else S3.powerOffAt = performance.now();
-  clack(); say(S3.powerOn ? "开机" : "关机");
+  sfxPower(S3.powerOn); say(S3.powerOn ? "开机" : "关机");
 }
 
 /* 键盘 */
@@ -1237,7 +1237,7 @@ window.addEventListener("keydown", function(e){
   var name = e.key === " " ? "space" : e.key.toLowerCase();
   if (e.key === "Backspace") name = "bksp"; if (e.key === "CapsLock") name = "caps";
   if (e.key === "Shift") name = "shift"; if (e.key === "Control") name = "ctrl";
-  var ks = S3.keys[name]; if (ks){ ks.forEach(function(k){ k.userData.press = 1; }); }
+  var ks = S3.keys[name]; if (ks){ ks.forEach(function(k){ k.userData.press = 1; }); audioInit(); if (AC && AC.state === "suspended") AC.resume(); clack(); }
   var k = e.key;
   if (k === "ArrowDown" || k === "ArrowUp"){
     e.preventDefault();
@@ -1301,36 +1301,100 @@ function audioInit(){
   frog();
 }function toggleSound(){
   audioInit(); if (!AC) return;
-  S3.soundOn = !S3.soundOn;
-  var b = document.getElementById("btn-sound");
-  b.setAttribute("aria-pressed", S3.soundOn ? "true" : "false"); b.textContent = "声音 " + (S3.soundOn ? "开" : "关");
+  S3.sndMode = S3.sndMode === 1 ? 2 : (S3.sndMode === 2 ? 0 : 1);
+  S3.soundOn = S3.sndMode === 2;
+  var b = document.getElementById("btn-sound"), nm = {1:"音效", 2:"全开", 0:"静音"}[S3.sndMode];
+  b.setAttribute("aria-pressed", S3.sndMode ? "true" : "false"); b.textContent = "声音 " + nm;
   hum.gain.setTargetAtTime(S3.soundOn ? .012 : 0, AC.currentTime, .2);
   rainG.gain.setTargetAtTime(S3.soundOn ? .09 : 0, AC.currentTime, .3);
-  if (S3.soundOn && AC.state === "suspended") AC.resume();
-  say("声音：" + (S3.soundOn ? "开（虫鸣 + 电流声）" : "关"));
+  if (S3.sndMode && AC.state === "suspended") AC.resume();
+  say("声音：" + {1:"仅点击音效", 2:"全开（点击音效 + 虫鸣 + 电流声）", 0:"静音"}[S3.sndMode]);
+  if (S3.sndMode) { var t = AC.currentTime; tn(t, 900, 1300, .08, "sine", .08); }
 }
-function beep(){
-  if (!S3.soundOn || !AC) return;
-  var t = AC.currentTime, o = AC.createOscillator(), g = AC.createGain();
-  o.type = "square"; o.frequency.setValueAtTime(880, t); o.frequency.exponentialRampToValueAtTime(220, t + .09);
-  g.gain.setValueAtTime(.08, t); g.gain.exponentialRampToValueAtTime(.0001, t + .12);
-  o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + .13);
+/* ---------- 音效（全部 WebAudio 现场合成） ---------- */
+function sfxOK(){ return !!AC && S3.sndMode > 0 && AC.state !== "closed"; }
+var _nb = null;
+function noiseBuf(){
+  if (!_nb){ var n = AC.sampleRate; _nb = AC.createBuffer(1, n, AC.sampleRate); var d = _nb.getChannelData(0); for (var i = 0; i < n; i++) d[i] = Math.random() * 2 - 1; }
+  return _nb;
 }
-function clack(){
-  if (!S3.soundOn || !AC) return;
-  var t = AC.currentTime, o = AC.createOscillator(), g = AC.createGain();
-  o.type = "triangle"; o.frequency.setValueAtTime(220, t); o.frequency.exponentialRampToValueAtTime(70, t + .04);
-  g.gain.setValueAtTime(.12, t); g.gain.exponentialRampToValueAtTime(.0001, t + .06);
-  o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + .07);
+/* 滤波噪声：type 滤波类型，f→f2 频率扫描，vol 音量 */
+function nz(t0, dur, f, q, vol, type, f2){
+  var s = AC.createBufferSource(); s.buffer = noiseBuf();
+  var b = AC.createBiquadFilter(); b.type = type || "bandpass"; b.frequency.setValueAtTime(f, t0); if (f2) b.frequency.exponentialRampToValueAtTime(f2, t0 + dur); b.Q.value = q || 1;
+  var g = AC.createGain(); g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(.0001, t0 + dur);
+  s.connect(b); b.connect(g); g.connect(AC.destination); s.start(t0, Math.random() * .5); s.stop(t0 + dur + .02);
 }
-function rumble(){
-  if (!S3.soundOn || !AC) return;
-  var t = AC.currentTime, o = AC.createOscillator(), g = AC.createGain();
-  o.type = "sawtooth"; o.frequency.setValueAtTime(48, t); o.frequency.exponentialRampToValueAtTime(24, t + 1.6);
-  g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.16, t + .15); g.gain.exponentialRampToValueAtTime(.0001, t + 1.8);
-  o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + 1.9);
+/* 音调：f0→f1 滑音，指数衰减 */
+function tn(t0, f0, f1, dur, type, vol, atk){
+  var o = AC.createOscillator(), g = AC.createGain(); o.type = type || "sine";
+  o.frequency.setValueAtTime(f0, t0); if (f1 !== f0) o.frequency.exponentialRampToValueAtTime(f1, t0 + dur);
+  g.gain.setValueAtTime(atk ? .0001 : vol, t0); if (atk) g.gain.linearRampToValueAtTime(vol, t0 + atk);
+  g.gain.exponentialRampToValueAtTime(.0001, t0 + dur);
+  o.connect(g); g.connect(AC.destination); o.start(t0); o.stop(t0 + dur + .02);
 }
-
+function beep(){      // 点屏幕/遥控器：继电器「嗒」+ 短促电子音
+  if (!sfxOK()) return;
+  var t = AC.currentTime;
+  nz(t, .018, 3200, 1.2, .18, "highpass");
+  tn(t + .004, 1500, 900, .06, "square", .02);
+  tn(t, 130, 70, .05, "triangle", .12);
+}
+function clack(){     // 键帽 / 通用机械键
+  if (!sfxOK()) return;
+  var t = AC.currentTime, k = .85 + Math.random() * .3;
+  nz(t, .03, 1800 * k, 2, .45, "bandpass");
+  tn(t, 240 * k, 90, .05, "triangle", .14);
+  nz(t + .035, .02, 900 * k, 3, .15, "bandpass");
+}
+function sfxLamp(on){ // 台灯拉线开关：两下「咔嗒」+ 灯丝轻响
+  if (!sfxOK()) return;
+  var t = AC.currentTime;
+  nz(t, .02, on ? 2600 : 1900, 3, .6, "bandpass");
+  tn(t, on ? 320 : 260, 90, .05, "triangle", .2);
+  nz(t + .05, .025, on ? 1700 : 1200, 3, .5, "bandpass");
+  tn(t + .05, on ? 200 : 150, 70, .06, "triangle", .16);
+  if (on){ tn(t + .1, 3300, 3000, .35, "sine", .012, .02); nz(t + .1, .25, 6000, .7, .03, "highpass"); }
+  else tn(t + .08, 120, 55, .15, "sine", .1);
+}
+function sfxPower(on){ // CRT 电源：开=继电器 + 消磁「嗡」+ 高频起振；关=高频衰减 + 收线「啪」
+  if (!sfxOK()) return;
+  var t = AC.currentTime;
+  if (on){
+    nz(t, .09, 380, .7, .7, "lowpass"); tn(t, 150, 60, .1, "triangle", .3);
+    tn(t + .06, 95, 38, .75, "sawtooth", .05, .01);
+    nz(t + .08, .6, 220, .8, .22, "lowpass");
+    tn(t + .1, 4000, 15734, .7, "sine", .006, .3);
+  } else {
+    tn(t, 15734, 1800, .38, "sine", .012);
+    nz(t + .02, .05, 260, .8, .5, "lowpass"); tn(t + .3, 700, 120, .06, "triangle", .12);
+  }
+}
+function sfxKnob(){    // 旋钮：棘轮「哒哒哒」
+  if (!sfxOK()) return;
+  var t = AC.currentTime;
+  for (var i = 0; i < 3; i++){ nz(t + i * .032, .014, 1500 + i * 180, 4, .7, "bandpass"); tn(t + i * .032, 180 + i * 20, 100, .03, "triangle", .08); }
+}
+function sfxTape(){    // 录像带：塑料闷响 + 机械转动
+  if (!sfxOK()) return;
+  var t = AC.currentTime;
+  nz(t, .1, 520, 1, .55, "bandpass"); tn(t, 170, 65, .11, "triangle", .22);
+  nz(t + .09, .3, 800, 1.3, .1, "bandpass", 2400);
+  nz(t + .36, .03, 1400, 3, .3, "bandpass");
+}
+function sfxKnock(){   // 相框：木头轻敲
+  if (!sfxOK()) return;
+  var t = AC.currentTime;
+  tn(t, 260, 135, .09, "sine", .26); nz(t, .045, 700, 1.4, .32, "bandpass");
+  tn(t + .12, 230, 120, .07, "sine", .14); nz(t + .12, .035, 650, 1.4, .18, "bandpass");
+}
+function sfxMeteor(){  // 流星：上扬的闪烁
+  if (!sfxOK()) return;
+  var t = AC.currentTime;
+  tn(t, 2600, 700, .7, "sine", .03, .04); tn(t + .05, 3900, 1300, .6, "sine", .016, .05);
+  nz(t, .6, 7000, .8, .035, "highpass", 3000);
+}
+function rumble(){}
 /* ---------- 相机 ---------- */
 var cam = {zoom:0, zoomT:0, px:0, py:0, tx:0, ty:0};
 function toggleZoom(){
@@ -1366,13 +1430,14 @@ function size(){
 function boot(){
   size();
   window.addEventListener("resize", size);
+  window.addEventListener("pointerdown", function(){ audioInit(); if (AC && AC.state === "suspended") AC.resume(); }, true);
   if (window.innerWidth / window.innerHeight < 1){ cam.zoom = cam.zoomT = 1; document.getElementById("btn-zoom").textContent = "缩小"; }
   S3.powerAt = performance.now();
 
   canvas.addEventListener("pointermove", function(e){ pointer.x = e.clientX; pointer.y = e.clientY; pointer.in = true; pointer.moved = true; pointer.mouse = e.pointerType === "mouse"; });
   canvas.addEventListener("pointerleave", function(){ pointer.in = false; pointer.moved = true; });
   canvas.addEventListener("pointerdown", function(e){
-    pointer.x = e.clientX; pointer.y = e.clientY; canvas.focus(); clickAt();
+    pointer.x = e.clientX; pointer.y = e.clientY; canvas.focus(); audioInit(); if (AC && AC.state === "suspended") AC.resume(); clickAt();
   });
   window.addEventListener("wheel", function(e){
     if (document.getElementById("reader").classList.contains("on")) return;
