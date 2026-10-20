@@ -68,6 +68,15 @@ html,body{height:100%;margin:0;background:#04050a;overflow:hidden;
 #reader .back:hover{background:#a63a2b;color:var(--paper)}
 #reader .seal{width:64px;height:64px;margin:56px auto 0;border:2px solid rgba(166,58,43,.55);border-radius:3px;display:grid;place-items:center;
   color:rgba(166,58,43,.85);font:700 13px/1.15 "Songti SC",serif;letter-spacing:.05em;text-align:center}
+@media (max-width:600px){
+  .hud.top{flex-wrap:wrap;padding:12px 14px 22px;gap:6px 12px}
+  .hud.top .name{font-size:16px}
+  .hud.top nav{margin-left:0;width:100%;justify-content:space-between;gap:6px;font-size:13px}
+  .hud button{white-space:nowrap;padding:8px 4px}
+  #reader .wrap{padding:64px 18px 110px}
+  #reader li a{flex-wrap:wrap;gap:4px 10px}
+  #reader .d{margin-left:0}
+}
 @media (max-width:900px){
   .hud.top{padding:16px 18px;gap:14px}
   .hud.top nav{gap:12px;font-size:12px}
@@ -234,15 +243,18 @@ function putRight(endCol, row, str, color, opt){
   drawChars(str, endCol * CW - measure(str, size) - 2, row * RH + RH - 4, size);
 }
 var DAYS = ["周日","周一","周二","周三","周四","周五","周六"];
+var MOB = false;
+function isMob(){ return window.innerWidth / window.innerHeight < 1; }
 function paintSig(){
+  MOB = isMob();
   S.setTransform(1,0,0,1,0,0);
   var bgg = S.createLinearGradient(0, 0, 0, SIG_H); bgg.addColorStop(0, "#0a1d4a"); bgg.addColorStop(1, "#050f2c"); S.fillStyle = bgg; S.fillRect(0, 0, SIG_W, SIG_H);
   var d = new Date();
   var dateStr = DAYS[d.getDay()] + " " + (d.getMonth()+1) + "月" + d.getDate() + "日";
   var hh = ("0"+d.getHours()).slice(-2) + ":" + ("0"+d.getMinutes()).slice(-2);
 
-  putRight(32, 0, dateStr, FG.green, {size:19});
-  putRight(38.6, 0, hh, FG.cyan, {size:19});
+  putRight(MOB ? 28 : 32, 0, dateStr, FG.green, {size:MOB ? 25 : 19});
+  putRight(MOB ? 39.2 : 38.6, 0, hh, FG.cyan, {size:MOB ? 25 : 19});
 
   S.fillStyle = "#3b0f0b"; S.fillRect(0, RH * 1.15, SIG_W, RH * 2.6);
   var seed = 5;
@@ -260,25 +272,37 @@ function paintSig(){
     var p = items[i], j = page * PER + i, row = POST_ROW0 + i * POST_STEP;
     var on = (j === hoverIdx || j === selIdx);
     if (on){ S.fillStyle = "rgba(26,62,150,.92)"; S.fillRect(0, row * RH, SIG_W, RH * POST_STEP); }
-    put(1, row, String(101 + POSTS.indexOf(p)), on ? FG.yellow : FG.cyan, {size:21});
-    put(6, row, fit(p.title, 56), on ? "#ffffff" : FG.white, {size:27});
-    put(6, row + 1, p.date, on ? "#eaf4ff" : "#4fe07a", {size:18});
     var cat = CATS[p.cat];
-    putRight(38.6, row + 1, cat.n, on ? "#ffe066" : cat.c, {size:18});
+    if (MOB){
+      var tt = p.title; while (tt.length > 1 && measure(tt + "…", 34) > 33.4 * CW) tt = tt.slice(0, -1);
+      put(0.6, row, String(101 + POSTS.indexOf(p)), on ? FG.yellow : FG.cyan, {size:24});
+      put(5.6, row, tt === p.title ? tt : tt + "…", on ? "#ffffff" : FG.white, {size:34});
+      put(5.6, row + 1, p.date, on ? "#eaf4ff" : "#4fe07a", {size:24});
+      putRight(39.2, row + 1, cat.n, on ? "#ffe066" : cat.c, {size:24});
+    } else {
+      put(1, row, String(101 + POSTS.indexOf(p)), on ? FG.yellow : FG.cyan, {size:21});
+      put(6, row, fit(p.title, 56), on ? "#ffffff" : FG.white, {size:27});
+      put(6, row + 1, p.date, on ? "#eaf4ff" : "#4fe07a", {size:18});
+      putRight(38.6, row + 1, cat.n, on ? "#ffe066" : cat.c, {size:18});
+    }
   }
-  put(1, 19, "点一行阅读 · 桌上的录像带可换栏目", "#a7b7d4", {size:22});
-  put(1, 20, "↑↓ 选择 · Enter 打开 · ←→ 翻页 · Z 放大", "#8595b0", {size:19});
+  if (MOB){
+    put(1, 19, "点一行阅读 · 点桌上的录像带换栏目", "#a7b7d4", {size:27});
+  } else {
+    put(1, 19, "点一行阅读 · 桌上的录像带可换栏目", "#a7b7d4", {size:22});
+    put(1, 20, "↑↓ 选择 · Enter 打开 · ←→ 翻页 · Z 放大", "#8595b0", {size:19});
+  }
 
   var keys = [["上一页", "#c9352b"], ["下一页", "#2fb04a"], ["随便一篇", "#d9b52a"], ["阅读版", "#2aa9bd"]];
   for (var k = 0; k < 4; k++){
     var col = k * 10 + 1;
     S.fillStyle = keys[k][1];
     S.fillRect((col - .5) * CW, FASTEXT_ROW * RH + 3, 9.4 * CW, RH * 2 - 6);
-    put(col + 1.2, FASTEXT_ROW + .55, keys[k][0], "#06080c", {size:27});
+    if (MOB) put(col + .8, FASTEXT_ROW + .5, keys[k][0], "#06080c", {size:32}); else put(col + 1.2, FASTEXT_ROW + .55, keys[k][0], "#06080c", {size:27});
   }
   // 底栏
   S.fillStyle = "#0d2a6b"; S.fillRect(0, 24 * RH, SIG_W, RH);
-  putRight(39.2, 24, "共 " + POSTS.length + " 篇", "#ffe066", {size:18});
+  putRight(39.2, 24, "共 " + POSTS.length + " 篇", "#ffe066", {size:MOB ? 23 : 18});
 }
 /* 着色器和拾取共用同一个弯曲函数 —— 这是上一版「边缘点不中」的根因 */
 var VISX = 0.95, VISY = 0.963;   // 屏幕网格比塑料开口略大，可见部分 = 中间这一块，正好对应整张画布
@@ -1377,6 +1401,7 @@ function frame(){
   S3.flash = Math.max(0, S3.flash - dt * 3.2);
 
   // 屏幕内容
+  if (isMob() !== MOB) dirty = true;
   var stamp = Math.floor(now / 20000);
   if (stamp !== lastStamp){ lastStamp = stamp; dirty = true; }
   if (dirty){ dirty = false; paintSig(); S3.screenTex.needsUpdate = true; }
