@@ -1275,28 +1275,28 @@ function audioInit(){
   rainG = AC.createGain(); rainG.gain.value = 0; rainG.connect(AC.destination);
   function cricket(freq, pan){
     if (!S3.soundOn) return;
-    var t0 = AC.currentTime + Math.random() * .1, bursts = 2 + Math.floor(Math.random() * 3), gap = .085 + Math.random() * .02;
+    var t0 = AC.currentTime + Math.random() * .1, bursts = 2 + Math.floor(Math.random() * 2), gap = .16 + Math.random() * .05;
     for (var i = 0; i < bursts; i++){
       var o = AC.createOscillator(), g2 = AC.createGain(), st = t0 + i * gap;
       o.type = "sine"; o.frequency.value = freq + Math.random() * 40;
-      g2.gain.setValueAtTime(0, st); g2.gain.linearRampToValueAtTime(.5, st + .012); g2.gain.exponentialRampToValueAtTime(.0005, st + .06);
+      g2.gain.setValueAtTime(0, st); g2.gain.linearRampToValueAtTime(.16, st + .035); g2.gain.exponentialRampToValueAtTime(.0005, st + .13);
       var pn = AC.createStereoPanner ? AC.createStereoPanner() : null;
       if (pn){ pn.pan.value = pan; o.connect(g2); g2.connect(pn); pn.connect(rainG); } else { o.connect(g2); g2.connect(rainG); }
-      o.start(st); o.stop(st + .08);
+      o.start(st); o.stop(st + .15);
     }
   }
   function loopCricket(freq, pan, minGap, maxGap){
     setTimeout(function(){ cricket(freq, pan); loopCricket(freq, pan, minGap, maxGap); }, minGap + Math.random() * (maxGap - minGap));
   }
-  loopCricket(4300, -.6, 380, 900); loopCricket(4700, .5, 450, 1100); loopCricket(3900, -.1, 600, 1500); loopCricket(5200, .8, 700, 1700);
+  loopCricket(4300, -.6, 2200, 5200); loopCricket(4700, .5, 2800, 6500); loopCricket(3900, -.1, 3500, 8000);
   function frog(){
-    if (S3.soundOn && Math.random() < .5){
+    if (S3.soundOn && Math.random() < .35){
       var t0 = AC.currentTime, o = AC.createOscillator(), g2 = AC.createGain();
       o.type = "triangle"; o.frequency.setValueAtTime(190, t0); o.frequency.exponentialRampToValueAtTime(120, t0 + .18);
-      g2.gain.setValueAtTime(0, t0); g2.gain.linearRampToValueAtTime(.22, t0 + .03); g2.gain.exponentialRampToValueAtTime(.001, t0 + .22);
+      g2.gain.setValueAtTime(0, t0); g2.gain.linearRampToValueAtTime(.1, t0 + .05); g2.gain.exponentialRampToValueAtTime(.001, t0 + .22);
       o.connect(g2); g2.connect(rainG); o.start(t0); o.stop(t0 + .25);
     }
-    setTimeout(frog, 1800 + Math.random() * 4200);
+    setTimeout(frog, 5000 + Math.random() * 9000);
   }
   frog();
 }function toggleSound(){
@@ -1306,7 +1306,7 @@ function audioInit(){
   var b = document.getElementById("btn-sound"), nm = {1:"音效", 2:"全开", 0:"静音"}[S3.sndMode];
   b.setAttribute("aria-pressed", S3.sndMode ? "true" : "false"); b.textContent = "声音 " + nm;
   hum.gain.setTargetAtTime(S3.soundOn ? .012 : 0, AC.currentTime, .2);
-  rainG.gain.setTargetAtTime(S3.soundOn ? .09 : 0, AC.currentTime, .3);
+  rainG.gain.setTargetAtTime(S3.soundOn ? .05 : 0, AC.currentTime, .6);
   if (S3.sndMode && AC.state === "suspended") AC.resume();
   say("声音：" + {1:"仅点击音效", 2:"全开（点击音效 + 虫鸣 + 电流声）", 0:"静音"}[S3.sndMode]);
   if (S3.sndMode) { var t = AC.currentTime; tn(t, 900, 1300, .08, "sine", .08); }
