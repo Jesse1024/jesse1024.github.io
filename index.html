@@ -654,6 +654,11 @@ html,body{height:100%;margin:0;background:#04050a;overflow:hidden;
   <button type="button" class="back" id="btn-back">回到书桌</button>
 </section>
 
+<style>
+#wj .gb-hint{ text-align:center; color:#6b6252; font-size:14px; letter-spacing:.08em; line-height:1.9; margin:18px auto 26px; max-width:30em; }
+#wj .gb-box{ min-height:240px; padding-bottom:60px; }
+#wj .gb-box .giscus, #wj .gb-box .giscus-frame{ width:100%; }
+</style>
 <div id="wj" role="dialog" aria-label="文集">
 <!-- ============ 主页 ============ -->
   <section id="home" class="view">
@@ -684,6 +689,19 @@ html,body{height:100%;margin:0;background:#04050a;overflow:hidden;
         <span>© 2026 南山怪客</span>
         <span>以文字观照</span>
       </footer>
+    </div>
+  </section>
+
+  <!-- ============ 留言簿 ============ -->
+  <section id="guestbook" class="view">
+    <div class="wrap">
+      <header class="article-head">
+        <a class="back" href="#/" id="wj-back-gb">← 返回书桌</a>
+        <span class="date"></span>
+      </header>
+      <h1 class="article-title" style="margin-top:28px">留言簿</h1>
+      <p class="gb-hint">留下你的名字和想说的话。留言需用 GitHub 账号登录，署名即你的 GitHub 用户名。</p>
+      <div id="gb-box" class="gb-box"></div>
     </div>
   </section>
 
@@ -1138,6 +1156,7 @@ function build(){
   buildNotebook();
   buildClock();
   buildPhotoFrame();
+  buildGuestbook();
   buildDust();
 }
 
@@ -1576,6 +1595,35 @@ function buildNotebook(){
   pen.rotation.z = Math.PI/2; pen.rotation.y = -.5;
 }
 
+/* ---------- 留言簿 ---------- */
+var GB_X = -28, GB_Z = 8, GB_R = .22;
+function buildGuestbook(){
+  var G = new THREE.Group(); G.position.set(GB_X, 0, GB_Z); G.rotation.y = GB_R; G.scale.setScalar(.78); scene.add(G);
+  var W = 15, D = 20, T = 2.4;
+  var leather = mat(0x5a1f1a, .55, .05);
+  var cc = cv(300, 400), cx = cc.getContext("2d");
+  cx.fillStyle = "#5a1f1a"; cx.fillRect(0, 0, 300, 400);
+  for (var i = 0; i < 1600; i++){ cx.fillStyle = "rgba(" + (Math.random() < .5 ? "0,0,0" : "255,200,170") + "," + (Math.random() * .06).toFixed(3) + ")"; cx.fillRect(Math.random() * 300, Math.random() * 400, 2, 2); }
+  cx.strokeStyle = "#c9a45a"; cx.lineWidth = 3; cx.strokeRect(18, 18, 264, 364);
+  cx.lineWidth = 1.2; cx.strokeRect(28, 28, 244, 344);
+  cx.fillStyle = "#d6b46a"; cx.font = "bold 62px 'Songti SC',SimSun,serif"; cx.textAlign = "center";
+  cx.fillText("留", 150, 170); cx.fillText("言", 150, 245); cx.fillText("簿", 150, 320);
+  var top = new THREE.MeshStandardMaterial({map:tex(cc), roughness:.5, metalness:.05});
+  var paper = mat(0xe9e0c6, .9);
+  var mats = [leather, leather, top, leather, leather, leather];
+  var cover = new THREE.Mesh(new THREE.BoxGeometry(W, .7, D), mats); cover.position.y = T - .35; shadowed(cover); G.add(cover);
+  var base = new THREE.Mesh(new THREE.BoxGeometry(W, .7, D), leather); base.position.y = .35; shadowed(base); G.add(base);
+  var pages = new THREE.Mesh(new THREE.BoxGeometry(W - 1, T - 1.4, D - 1), paper); pages.position.set(.3, T / 2, 0); shadowed(pages); G.add(pages);
+  var spine = new THREE.Mesh(new THREE.BoxGeometry(.9, T, D), leather); spine.position.set(-W / 2 + .45, T / 2, 0); shadowed(spine); G.add(spine);
+  // 书签丝带
+  var rib = new THREE.Mesh(new THREE.BoxGeometry(.7, .12, 5.5), mat(0xa63a2b, .7)); rib.position.set(2, T - .05, D / 2 + 2); shadowed(rib); G.add(rib);
+  // 金色小扣角
+  var gold = new THREE.MeshStandardMaterial({color:0xc9a45a, roughness:.3, metalness:.85});
+  [[W / 2 - .2, D / 2 - .2], [W / 2 - .2, -D / 2 + .2]].forEach(function(p){ var m = new THREE.Mesh(new THREE.BoxGeometry(.5, T - .1, .5), gold); m.position.set(p[0], T / 2, p[1]); G.add(m); });
+  var hit = new THREE.Mesh(new THREE.BoxGeometry(W, T, D), new THREE.MeshBasicMaterial({visible:false})); hit.position.y = T / 2; G.add(hit);
+  tag(G, "guestbook", null, "<b>留言簿</b><br><span>点一下：翻开，留下你的名字</span>");
+}
+
 /* ---------- 闹钟（摆件） ---------- */
 function buildClock(){
   var C = new THREE.Group(); C.position.set(42, 0, 31); C.rotation.y = -.34; scene.add(C);
@@ -1820,6 +1868,7 @@ function doAction(act, data, obj){
     case "thunder": S3.meteor && S3.meteor(); sfxMeteor(); say("一颗流星"); break;
     case "key": clack(); break;
     case "clock": clockRing(); break;
+    case "guestbook": sfxKnock(); say("留言簿"); setTimeout(function(){ location.hash = "#/guestbook"; }, 160); break;
     case "photo": sfxKnock(); S3.photoWob && S3.photoWob(); say("相框：晃了一下"); break;
   }
 }
@@ -3180,12 +3229,25 @@ window.__nsk = {S3:S3, cam:cam, doAction:doAction, scene:scene, camera:camera};
     wj.scrollTop = 0;
   }
 
-  const views = [home, article, categoryView];
+  const guestbookView = document.getElementById("guestbook");
+  const views = [home, article, categoryView, guestbookView];
+  const GISCUS = { repo:"Jesse1024/jesse1024.github.io", repoId:"R_kgDOUkDGhA", category:"Announcements", categoryId:"DIC_kwDOUkDGhM4DJLeM" };
+  let gbLoaded = false;
+  function loadGuestbook(){
+    if (gbLoaded) return; gbLoaded = true;
+    const sc = document.createElement("script");
+    sc.src = "https://giscus.app/client.js"; sc.async = true; sc.crossOrigin = "anonymous";
+    const at = { "data-repo":GISCUS.repo, "data-repo-id":GISCUS.repoId, "data-category":GISCUS.category, "data-category-id":GISCUS.categoryId,
+      "data-mapping":"specific", "data-term":"留言簿", "data-strict":"0", "data-reactions-enabled":"0", "data-emit-metadata":"0",
+      "data-input-position":"top", "data-theme":"https://jesse1024.github.io/giscus-theme.css", "data-lang":"zh-CN", "data-loading":"lazy" };
+    for (const k in at) sc.setAttribute(k, at[k]);
+    document.getElementById("gb-box").appendChild(sc);
+  }
   let lastHash = "", from = null;
   function show(v){ views.forEach(x => x.classList.toggle("active", x === v)); }
   function route() {
     const h = location.hash;
-    const open = /^#\/(post|cat|list)(\/|$)/.test(h);
+    const open = /^#\/(post|cat|list|guestbook)(\/|$)/.test(h);
     wj.classList.toggle("open", open);
     if (h.startsWith("#/post/")) {
       from = /^#\/(list|cat\/)/.test(lastHash) ? lastHash : null;
@@ -3194,6 +3256,8 @@ window.__nsk = {S3:S3, cam:cam, doAction:doAction, scene:scene, camera:camera};
       renderPost(h.slice(7)); show(article);
     } else if (h.startsWith("#/cat/")) {
       renderCategoryPage(h.slice(6)); show(categoryView);
+    } else if (h.startsWith("#/guestbook")) {
+      document.title = "留言簿 · 南山怪客"; show(guestbookView); wj.scrollTop = 0; loadGuestbook();
     } else if (h.startsWith("#/list")) {
       document.title = "南山怪客 · 文集"; show(home); wj.scrollTop = 0;
     } else {
@@ -3203,6 +3267,7 @@ window.__nsk = {S3:S3, cam:cam, doAction:doAction, scene:scene, camera:camera};
   }
   function closeWj(){ history.pushState(null, "", location.pathname + location.search); route(); }
   document.getElementById("wj-back-home").addEventListener("click", function(e){ e.preventDefault(); closeWj(); });
+  document.getElementById("wj-back-gb").addEventListener("click", function(e){ e.preventDefault(); closeWj(); });
   document.getElementById("wj-back-article").addEventListener("click", function(e){ if (!from) { e.preventDefault(); closeWj(); } });
 
   renderCategories();
