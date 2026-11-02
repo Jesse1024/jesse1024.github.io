@@ -43,6 +43,8 @@ html,body{height:100%;margin:0;background:#04050a;overflow:hidden;
 .hud.top nav{margin-left:auto;display:flex;gap:20px}
 .hud button{font:inherit;letter-spacing:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:4px 2px;border-bottom:1px solid transparent}
 .hud button:hover{color:#f0eadd;border-bottom-color:#8d6a3a}
+.hud a.hud-link{font:inherit;letter-spacing:inherit;color:inherit;text-decoration:none;padding:4px 2px;border-bottom:1px solid transparent;cursor:pointer}
+.hud a.hud-link:hover{color:#f0eadd;border-bottom-color:#8d6a3a}
 .hud.bottom{left:0;right:0;bottom:0;padding:14px 28px;justify-content:space-between;
   background:linear-gradient(0deg,rgba(4,5,10,.9),transparent);font-size:12px;color:#8b95a5;pointer-events:none}
 .hud.bottom .keys{display:flex;gap:16px;flex-wrap:wrap}
@@ -65,8 +67,8 @@ html,body{height:100%;margin:0;background:#04050a;overflow:hidden;
 #reader a:hover .t{color:var(--zhu)}
 #reader .d{margin-left:auto;font:12px/1.5 "Songti SC",serif;color:#8a7d66;white-space:nowrap}
 #reader .c{font:11px/1.5 "Songti SC",serif;color:#a63a2b;border:1px solid rgba(166,58,43,.4);padding:2px 6px;border-radius:2px;white-space:nowrap}
-#reader .back{position:fixed;right:26px;bottom:24px;padding:11px 18px;border:1px solid #a63a2b;color:#a63a2b;background:var(--paper);
-  font:13px/1 "Songti SC",serif;letter-spacing:.2em;cursor:pointer}
+#reader .back{position:fixed;right:26px;bottom:24px;padding:14px 24px;border:1px solid #a63a2b;color:#a63a2b;background:var(--paper);
+  font:15px/1 "Songti SC",serif;letter-spacing:.22em;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.28)}
 #reader .back:hover{background:#a63a2b;color:var(--paper)}
 #reader .seal{width:64px;height:64px;margin:56px auto 0;border:2px solid rgba(166,58,43,.55);border-radius:3px;display:grid;place-items:center;
   color:rgba(166,58,43,.85);font:700 13px/1.15 "Songti SC",serif;letter-spacing:.05em;text-align:center}
@@ -277,13 +279,6 @@ html,body{height:100%;margin:0;background:#04050a;overflow:hidden;
     transition: opacity .3s ease;
   }
 #wj .category-card:hover::after{ opacity: 1; }
-#wj .friends{ margin: 72px 0 0; padding-top: 28px; border-top: 1px solid var(--line); }
-#wj .friends-title{ font-family: var(--sans); font-size: 12px; letter-spacing: .28em; color: var(--muted); margin-bottom: 20px; }
-#wj .friends-list{ display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
-#wj .friend{ display: block; border: 1px solid var(--line); padding: 20px 22px; text-decoration: none; color: inherit; background: rgba(244, 236, 220, .35); transition: border-color .3s ease, transform .3s ease; }
-#wj .friend:hover{ border-color: var(--cinnabar); transform: translateY(-3px); }
-#wj .friend .f-name{ display: block; font-family: var(--title); font-weight: bold; font-size: 18px; letter-spacing: .02em; }
-#wj .friend .f-desc{ display: block; font-family: var(--sans); font-size: 12px; color: var(--muted); letter-spacing: .06em; margin-top: 8px; }
 #wj .category-title{
     font-family: var(--title);
     font-weight: bold;
@@ -308,13 +303,15 @@ html,body{height:100%;margin:0;background:#04050a;overflow:hidden;
   }
 #wj .back{
     text-decoration: none;
-    color: var(--ink);
+    color: var(--cinnabar);
     font-family: var(--sans);
-    font-size: 12px;
-    letter-spacing: .22em;
-    transition: color .3s ease;
+    font-size: 13px;
+    letter-spacing: .2em;
+    border: 1px solid var(--cinnabar);
+    padding: 8px 16px;
+    transition: all .3s ease;
   }
-#wj .back:hover{ color: var(--cinnabar); }
+#wj .back:hover{ background: var(--cinnabar); color: var(--paper); }
 #wj .article-head .date{
     font-family: var(--sans);
     font-size: 12px;
@@ -626,6 +623,8 @@ html,body{height:100%;margin:0;background:#04050a;overflow:hidden;
 <header class="hud top">
   <span class="name">南山怪客</span>
   <nav>
+    <a class="hud-link" href="https://songxiaopeng529.github.io/story-web" target="_blank" rel="noopener">宋小鹏</a>
+    <a class="hud-link" href="https://jesse1024.github.io/pixel-gallery" target="_blank" rel="noopener">像素回廊</a>
     <button type="button" id="btn-zoom">放大屏幕</button>
     <button type="button" id="btn-reader">阅读版</button>
     <button type="button" id="btn-random">随便一篇</button>
@@ -658,7 +657,7 @@ html,body{height:100%;margin:0;background:#04050a;overflow:hidden;
     <ol id="rlist"></ol>
     <div style="margin-top:28px"><a href="#/list"><span class="t">进入文集 · 按栏目浏览 →</span></a></div>
   </div>
-  <button type="button" class="back" id="btn-back">回到书桌</button>
+  <button type="button" class="back" id="btn-back">回到电脑桌</button>
 </section>
 
 <style>
@@ -691,20 +690,6 @@ html,body{height:100%;margin:0;background:#04050a;overflow:hidden;
       <div class="categories" id="categories"></div>
 
       <ul class="catalog" id="catalog"></ul>
-
-      <div class="friends">
-        <div class="friends-title">友链</div>
-        <div class="friends-list">
-          <a class="friend" href="https://songxiaopeng529.github.io/story-web" target="_blank" rel="noopener">
-            <span class="f-name">宋小鹏的个人网站</span>
-            <span class="f-desc">记录技术思考，分享博客与作品</span>
-          </a>
-          <a class="friend" href="https://jesse1024.github.io/pixel-gallery" target="_blank" rel="noopener">
-            <span class="f-name">像素回廊</span>
-            <span class="f-desc">我的摄影集 · 一个人的摄影展</span>
-          </a>
-        </div>
-      </div>
 
       <footer class="colophon">
         <span>© 2026 南山怪客</span>
